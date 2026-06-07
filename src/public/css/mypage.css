@@ -1,0 +1,35 @@
+.mypage__form{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 0 0 30px;
+    width: 600px;
+    margin: 0 auto;
+    padding: 50px 0 0;
+}
+
+.mypage__picture {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 30px;
+}
+
+.mypage__name {
+    width: 200px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.mypage__picture--select {
+    display: flex;
+    justify-content: center;
+    /* 左右の中央揃え */
+    align-items: center;
+    /* 上下の中央揃え */
+    width: 200px;
+    height: 40px;
+    color: #ff0000;
+    border: 2px solid #ff0000;
+    border-radius: 40px;
+}

@@ -1,0 +1,134 @@
+.header {
+    background: #000;
+}
+
+.header__inner {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    padding: 20px 15px;
+    max-width: 1400px;
+}
+
+.header__left {
+    display: flex;
+    align-content: flex-start;
+}
+
+.header__logo {
+    display: flex;
+    align-items: center;
+}
+
+.header__search{
+    display: flex;
+    align-items: center;
+}
+
+.header__search input{
+    background: #fff;
+    padding: 10px;
+    margin-left: 20px;
+    width: 400px;
+    border-radius: 3px;
+    appearance: none;
+}
+
+.header__right {
+    display: flex;
+    align-content: flex-end;
+}
+
+.header__right--menu{
+    color: #fff;
+    width:120px;
+    display: flex;
+    align-items: center;
+}
+
+.header__button {
+    padding: 10px;
+    width: 30%;
+    height: 50px;
+    border: none;
+    border-radius: 3px;
+    background: #fff;
+    color: #000;
+    cursor: pointer;
+}
+
+
+/*＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+ボディー共通部
+*＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊*/
+.common__form {
+    width: 500px;
+    margin: 0 auto;
+    padding: 50px 0 0;
+}
+
+h1 {
+    font-size: 32px;
+    text-align: center;
+    margin: 0 0 50px;
+}
+
+.common__input-box {
+    background: #fff;
+    padding: 10px;
+    width: 100%;
+    height: 45px;
+    margin: 5px 0 20px;
+    border: 2px;
+    appearance: none;
+    border: 1px solid #696969;
+}
+
+.common__button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: red;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px;
+    width: 100%;
+    height: 50px;
+    margin: 30px 0 15px;
+    border: 2px;
+    appearance: none;
+}
+
+.common__picture--photo{
+    height: 130px;
+    width: 130px;
+    border-radius: 50%;     /* 角を50%丸めることで正円にする */
+    object-fit: cover;      /* 縦横比を崩さずに中央でトリミングする */
+    margin: 0 30px 0 0
+}
+
+.common__button--below{
+    font-size: 16px;
+    text-align: center;
+}
+
+a{
+    text-decoration: none;
+}
+
+.common__input-box:-webkit-autofill,
+.common__input-box:-webkit-autofill:hover,
+.common__input-box:-webkit-autofill:focus {
+    box-shadow: 0 0 0px 1000px #fff inset;
+    /* 背景色を白（#fff）で塗りつぶす */
+    -webkit-text-fill-color: #333;
+    /* 文字色を任意の il 色（ここでは濃いグレー）にする */
+}
+
+.common__input-textbox {
+    width: 100%;
+    height: 100px;
+    background: #fff;
+    padding: 10px;
+}

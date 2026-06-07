@@ -1,0 +1,154 @@
+
+.purchase__form {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 0 auto;
+    padding: 50px 0 0;
+    max-width: 1100px;
+
+}
+
+
+.purchase__content{
+    display: flex;
+    justify-content: flex-start;
+    padding: 0 0 30px;
+    border-bottom: silver solid 2px;
+}
+
+.purchase__form--main{
+    width: 600px;
+}
+
+.purchase__picture--photo {
+    height: 150px;
+    width: auto;
+    /* 幅を自動計算にして縦横比を維持する */
+    object-fit: contain;
+    /* 画像が歪んだり潰れたりするのを防ぐ */
+}
+
+.purchase__content--info{
+    margin: 0 0 0 20px;
+}
+
+.purchase__form h1{
+    font-size: 26px;
+    margin: 0;
+}
+
+.purchase__content--price {
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+    margin: 15px 0;
+}
+
+.purchase__content--price-unit {
+    font-size: 20px;
+    margin: 0 5px 0 0 ;
+}
+
+.purchase__content--price-tag {
+    font-size: 24px;
+    margin: 0 2px;
+}
+
+.purchase__payment{
+    padding: 15px;
+    border-bottom: silver solid 2px;
+}
+
+.purchase__payment--title{
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 20px;
+}
+
+.purchase__select-box--wrapper {
+    position: relative;
+    width: 300px;
+    margin: 0 0 0 40px;
+}
+
+.purchase__select-box--wrapper::after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 10px 10px 0 10px;
+    border-color: #696969 transparent transparent transparent;
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    transform: translateY(calc(-50% - 5px));
+    pointer-events: none;
+}
+
+.purchase__select-box {
+    width: 300px;
+    height: 45px;
+    margin: 5px 0 20px;
+    padding: 0 30px 0 10px;
+    border: 1px solid #696969;
+    outline: none;
+    box-sizing: border-box;
+    color: #696969;
+    font-size: 14px;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.purchase__delivery {
+    padding: 15px;
+    border-bottom: silver solid 2px;
+}
+
+.purchase__delivery--wrap{
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 20px;
+}
+
+.purchase__delivery--title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.purchase__delivery--edit{
+
+}
+
+.purchase__delivery--address{
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0 0 0 40px;
+}
+
+.purchase__summary{
+    width: 400px;
+}
+
+.purchase__summary--wrap{
+    border: silver solid 2px;
+}
+
+.purchase__summary--item{
+    display: flex;
+    justify-content: space-between;
+}
+
+.purchase__summary--item+.purchase__summary--item {
+    border-top: 2px solid silver;
+    /* アイテム間の横線 */
+}
+
+.purchase__summary--title,
+.purchase__summary--content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    padding: 20px 0;
+}

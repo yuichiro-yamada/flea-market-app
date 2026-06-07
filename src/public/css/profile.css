@@ -1,0 +1,19 @@
+.profile__picture {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 0 0 30px;
+}
+
+.profile__picture--select {
+    display: flex;
+    justify-content: center;
+    /* 左右の中央揃え */
+    align-items: center;
+    /* 上下の中央揃え */
+    width: 150px;
+    height: 40px;
+    color: #ff0000;
+    border: 2px solid #ff0000;
+    border-radius: 40px;
+}
