@@ -23,8 +23,18 @@
         </div>
       </div>
       <div class="header__right">
-        <div class="header__right--menu">ログアウト</div>
-        <div class="header__right--menu">マイページ</div>
+        <div class="header__right--position">
+          <form action="/logout" method="post">
+            @csrf
+            @auth
+              <button type="submit" class="header__right--menu header__right--btn">ログアウト</button>
+            @endauth
+            @guest
+              <a href="/login" class="header__right--menu header__right--position">ログイン</a>
+            @endguest
+          </form>
+        </div>
+        <a href="/mypage" class="header__right--menu header__right--position">マイページ</a>
         <button class="header__button">出品</button>
       </div>
     </div>

@@ -7,17 +7,35 @@
 @section('content')
 <div class="common__form">
     <h1>会員登録</h1>
-    <div class="common__">ユーザー名</div>
-    <input type="text"  class="common__input-box" name="user_name">
-    <div>メールアドレス</div>
-    <input type="text"  class="common__input-box" name="email">
-    <div>パスワード</div>
-    <input type="text"  class="common__input-box" name="password">
-    <div>確認用パスワード</div>
-    <input type="text"  class="common__input-box" name="confirmation-password">
-    <button class="common__button">会員登録</button>
+    <form action="register" method="post" novalidate>
+        @csrf
+        <div class="common__heading">ユーザー名</div>
+        <input type="text"  class="common__input-box" name="member_name" value="{{old('member_name')}}">
+        <div class="error-message">
+            @error('member_name')
+            {{$message}}
+            @enderror
+        </div>
+        <div class="common__heading">メールアドレス</div>
+        <input type="text"  class="common__input-box" name="email" value="{{old('email')}}">
+        <div class="error-message">
+            @error('email')
+            {{$message}}
+            @enderror
+        </div>
+        <div class="common__heading">パスワード</div>
+        <input type="text"  class="common__input-box" name="password">
+        <div class="common__heading">確認用パスワード</div>
+        <input type="text"  class="common__input-box" name="password_confirmation">
+        <div class="error-message">
+            @error('password')
+            {{$message}}
+            @enderror
+        </div>
+        <button class="common__button" type="submit">会員登録</button>
+    </form>
     <div class=common__button--below>
-        <a href="*********">ログインはこちら</a>
+        <a href="/login">ログインはこちら</a>
     </div>
 </div>
 @endsection

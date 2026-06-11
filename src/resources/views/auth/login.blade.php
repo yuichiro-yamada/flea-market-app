@@ -3,13 +3,26 @@
 @section('content')
 <div class="common__form">
     <h1>ログイン</h1>
-    <div class="common__">メールアドレス</div>
-    <input type="text"  class="common__input-box" name="email">
-    <div>パスワード</div>
-    <input type="text"  class="common__input-box" name="password">
-    <button class="common__button">ログイン</button>
-    <div class=common__button--below>
-        <a href="*********">会員登録はこちら</a>
-    </div>
+    <form action="/login" method="post" novalidate>
+        @csrf
+        <div class="common__heading">メールアドレス</div>
+        <input type="text"  class="common__input-box" name="email" value="{{old('email')}}">
+        <div class="error-message">
+            @error('email')
+            {{$message}}
+            @enderror
+        </div>
+        <div class="common__heading">パスワード</div>
+        <input type="text"  class="common__input-box" name="password">
+        <div class="error-message">
+            @error('password')
+            {{$message}}
+            @enderror
+        </div>
+        <button class="common__button" type="submit">ログイン</button>
+        <div class=common__button--below>
+            <a href="/register">会員登録はこちら</a>
+        </div>
+    </form>
 </div>
 @endsection
