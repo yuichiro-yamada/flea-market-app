@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [ItemController::class, 'index'])->name('index');
     Route::get('/mypage',[UserController::class,'mypage'])->name('mypage');
     Route::get('/mypage/profile', [UserController::class, 'profile'])->name('profile');
+    
     Route::post('/profile/update', [UserController::class, 'updateAll'])->name('profile.update.all');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
