@@ -21,14 +21,15 @@ use App\Http\Controllers\AddressController;
 
 Route::get('/login',[AuthController::class,'loginView'])->name('login');
 Route::post('/login',[AuthController::class,'login']);
-Route::get('/mypage',[UserController::class,'mypage'])->name('mypage');
+Route::get('/', [ItemController::class, 'index'])->name('index');
 
 Route::get('/register',[AuthController::class,'create']);
 Route::post('/register',[AuthController::class,'store']);
 Route::middleware('auth')->group(function () {
-    Route::get('/mypage/profile', [UserController::class, 'profile'])->name('profile');
-    Route::patch('/mypage/profile', [UserController::class, 'update']);
+    Route::get('/index', [ItemController::class, 'index'])->name('index');
+    Route::patch('/index', [UserController::class, 'update']);
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 });
 
 
@@ -36,6 +37,10 @@ Route::middleware('auth')->group(function () {
 
 
 /*
+    Route::get('/mypage',[UserController::class,'mypage'])->name('mypage');
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+
+
 Route::get('/',[ItemController::class,'index']);
 Route::get('/profile',[UserController::class,'profile']);
 

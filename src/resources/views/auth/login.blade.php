@@ -3,7 +3,7 @@
 @section('content')
 <div class="common__form">
     <h1>ログイン</h1>
-    <form action="/login" method="post" novalidate>
+    <form action="{{ route('login') }}" method="post" novalidate>
         @csrf
         <div class="common__heading">メールアドレス</div>
         <input type="text"  class="common__input-box" name="email" value="{{old('email')}}">

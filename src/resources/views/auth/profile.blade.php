@@ -8,7 +8,7 @@
 @section('content')
 <div class="common__form">
     <h1>プロフィール設定</h1>
-    <form action="/mypage/profile" method="post" novalidate>
+    <form action="/index" method="post" novalidate>
         @csrf
         @method('PATCH')
         <div class="profile__picture">

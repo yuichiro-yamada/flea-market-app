@@ -20,8 +20,10 @@ return new class extends Migration
             $table->string('postcode',7)->nullable();
             $table->string('address',255)->nullable();
             $table->string('building',255)->nullable();
-            // ★追加：退会フラグ（デフォルトは退会していない状態の false）
+            // 退会フラグ（デフォルトは退会していない状態の false）
             $table->boolean('is_withdrawn')->default(false);
+            // nullable() をつけることで、初回ログイン前は自動的に null が入る
+            $table->timestamp('last_login_at')->nullable();
             $table->timestamps();
         });
     }

@@ -13,38 +13,16 @@
     </div>
     <div class="index__items--wrapper">
         <div class="index__items--row">
-
+            @foreach($items as $item)
             <div class="index__items--box">
                 <div class="index__items--picture">
-                    <img src="images/items/Armani+Mens+Clock.jpg">
+                    <img src="images/items/{{ $item->item_image }}">
                 </div>
                 <div class="index__items--name">
-                    商品名
+                    {{ $item->item_name }}
                 </div>
             </div>
-
-            <div class="index__items--box">
-                <div class="index__items--picture">
-                    <img src="images/items/Armani+Mens+Clock.jpg">
-                </div>
-                <div class="index__items--name">
-                    商品名
-                </div>
-            </div>
-
-            <div class="index__items--box">
-                <div class="index__items--picture">
-                    <img src="images/items/Armani+Mens+Clock.jpg">
-                </div>
-                <div class="index__items--name">
-                    商品名
-                </div>
-            </div>
-
-            <div class="index__items--box">
-
-            </div>
-
+            @endforeach
         </div>
     </div>
 @endsection

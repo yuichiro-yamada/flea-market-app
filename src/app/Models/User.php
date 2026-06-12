@@ -28,6 +28,7 @@ class User extends Authenticatable
         'address',
         'building',
         'is_withdrawn',
+        'last_login_at'
     ];
 
     /**

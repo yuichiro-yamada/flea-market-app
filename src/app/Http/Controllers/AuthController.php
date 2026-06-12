@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
-use App\Http\Requests\LoginRequest; 
+use App\Http\Requests\LoginRequest;
 
 class AuthController extends Controller
 {
@@ -22,7 +22,11 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             // ログイン成功：セッションを新しくしてセキュリティを高める
             $request->session()->regenerate();
-            return redirect()->intended('/mypage');
+            // ログインしたユーザー（Auth::user()）の last_login_at に現在時刻（now()）を保存
+            Auth::user()->update([
+                'last_login_at' => now(),
+            ]);
+            return redirect()->intended('/index');
             return back()->withErrors([
                 'auth_error' => 'ログイン情報が登録されていません',
             ])->onlyInput('email');
@@ -44,7 +48,7 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         // 3. 【ここが重要】マイページ（/mypage）に自動で移動させる
-        return redirect('/mypage'); 
+        return redirect('/'); 
     }
 
     
