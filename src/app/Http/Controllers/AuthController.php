@@ -26,7 +26,7 @@ class AuthController extends Controller
             Auth::user()->update([
                 'last_login_at' => now(),
             ]);
-            return redirect()->intended('/index');
+            return redirect()->intended('/');
             return back()->withErrors([
                 'auth_error' => 'ログイン情報が登録されていません',
             ])->onlyInput('email');

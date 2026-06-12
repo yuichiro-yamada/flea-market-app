@@ -12,7 +12,7 @@ class ItemController extends Controller
         if (Auth::check()) {
             $user = Auth::user();
             $items = Item::whereIn('sales_status', [1, 2, 3])->get();
-            return view('auth.mypage', compact('user','items'));
+            return view('index', compact('user','items'));
         }
         $items = Item::whereIn('sales_status', [1, 2, 3])->get();
         return view('/index', compact('items'));

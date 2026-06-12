@@ -26,10 +26,12 @@ Route::get('/', [ItemController::class, 'index'])->name('index');
 Route::get('/register',[AuthController::class,'create']);
 Route::post('/register',[AuthController::class,'store']);
 Route::middleware('auth')->group(function () {
-    Route::get('/index', [ItemController::class, 'index'])->name('index');
-    Route::patch('/index', [UserController::class, 'update']);
+    Route::get('/', [ItemController::class, 'index'])->name('index');
+    Route::get('/mypage',[UserController::class,'mypage'])->name('mypage');
+    Route::get('/mypage/profile', [UserController::class, 'profile'])->name('profile');
+    Route::post('/profile/update', [UserController::class, 'updateAll'])->name('profile.update.all');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+
 });
 
 
@@ -37,6 +39,11 @@ Route::middleware('auth')->group(function () {
 
 
 /*
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+
+    Route::patch('/index', [UserController::class, 'update']);
+    Route::post('/profile/image', [UserController::class, 'updateImage'])->name('profile.image.update');
+
     Route::get('/mypage',[UserController::class,'mypage'])->name('mypage');
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 

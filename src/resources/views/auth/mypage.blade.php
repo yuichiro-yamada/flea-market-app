@@ -9,16 +9,17 @@
 @auth
     <div class="mypage__form">
         <div class="mypage__picture">
-            <img src="/images/profile/{{ $user->member_image ?? 'silver.png' }}" class="common__picture--photo">
+            <img src="{{ $user->member_image && file_exists(public_path('storage/images/profile/' . $user->member_image)) ? '/storage/images/profile/' . $user->member_image : '/images/profile/silver.png' }}" class="common__picture--photo">
+
             <div class="mypage__name">{{ $user->member_name }}</div>
-            <div class="mypage__picture--select">プロフィールを編集</div>
+            <a href="mypage/profile" class="mypage__picture--select">プロフィールを編集</a>
         </div>
     </div>
 @endauth
 <div class="index__menu">
     <div class="index__menu--wrapper">
-        <div class="index__menu--link">おすすめ</div>
-        <div class="index__menu--link">マイリスト</div>
+        <div class="index__menu--link">出品した商品</div>
+        <div class="index__menu--link">購入した商品</div>
     </div>
 </div>
 <div class="index__items--wrapper">
