@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Item extends Model
 {
@@ -21,6 +22,41 @@ class Item extends Model
         'item_price',
         'sales_status',
     ];
+
+
+    /* conditionの値を数字として定義 */
+    protected $casts = [
+        'condition' => 'integer',
+    ];
+
+    /* 商品の状態を数値から文字列に変換するアクセサ */
+    public function getConditionTextAttribute()
+    {
+        // $this->condition と書くことで、上記の $casts が適用された綺麗な数値が取れます
+        $value = $this->condition ?? null;
+
+        return match ($value) {
+            1 => '新品・未使用',
+            2 => '未使用に近い',
+            3 => '目立った傷や汚れなし',
+            4 => 'やや傷や汚れあり',
+            default => '全体的に状態が悪い',
+        };
+    }
+
+    /**
+     * 商品の価格を「¥3,000」の形式に変換するアクセサ
+     * メソッド名を「get + カメルケースのカラム名 + Formatted + Attribute」にしています
+     */
+    public function getItemPriceFormattedAttribute()
+    {
+        // データベースから生の価格（数値）を取得します
+        $price = $this->attributes['item_price'] ?? 0;
+
+        // number_format でカンマ区切りにし、先頭に「¥」をくっつけて返します
+        return number_format($price);
+    }
+
 
     // 出品者
     public function seller(): BelongsTo

@@ -16,26 +16,44 @@
         </div>
     </div>
 @endauth
+@php
+    // クエリパラメータ 'page' を取得。未指定の場合はデフォルトで 'sell'（出品した商品）とする
+    $page = request()->query('page', 'sell');
+@endphp
+
 <div class="index__menu">
     <div class="index__menu--wrapper">
-        <div class="index__menu--link">出品した商品</div>
-        <div class="index__menu--link">購入した商品</div>
+        <!-- 出品した商品ボタン -->
+        <a href="{{ url('/mypage?page=sell') }}" 
+           class="{{ $page === 'sell' ? 'index__menu--link-red' : 'index__menu--link' }}">
+            出品した商品
+        </a>
+        
+        <!-- 購入した商品ボタン -->
+        <a href="{{ url('/mypage?page=buy') }}" 
+           class="{{ $page === 'buy' ? 'index__menu--link-red' : 'index__menu--link' }}">
+            購入した商品
+        </a>
     </div>
 </div>
+
 <div class="index__items--wrapper">
     <div class="index__items--row">
-
-        @foreach($items as $item)
-        <div class="index__items--box">
-            <div class="index__items--picture">
-                <img src="images/items/{{ $item->item_image }}">
+        @if($items->isEmpty())
+            <p>商品はありません。</p>
+        @else
+            @foreach($items as $item)
+            <div class="index__items--box">
+                <div class="index__items--picture">
+                    <img src="{{ asset('storage/images/items/' . $item->item_image) }}">
+                </div>
+                <div class="index__items--name">
+                    {{ $item->item_name }}
+                </div>
             </div>
-            <div class="index__items--name">
-                {{ $item->item_name }}
-            </div>
-        </div>
-        @endforeach
-
+            @endforeach
+        @endif
     </div>
 </div>
+
 @endsection

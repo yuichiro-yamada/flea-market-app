@@ -35,7 +35,7 @@
           </form>
         </div>
         <a href="/mypage" class="header__right--menu header__right--position">マイページ</a>
-        <button class="header__button">出品</button>
+        <a href="/sell" class="header__button">出品</a>
       </div>
     </div>
   </header>

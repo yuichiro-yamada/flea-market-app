@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Review extends Model
 {
-class Review extends Model
-{
     protected $fillable = [
         'user_id',
         'item_id',

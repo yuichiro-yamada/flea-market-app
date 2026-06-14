@@ -22,14 +22,21 @@ class UserController extends Controller
 
         return view('auth.profile', compact('user'));
     }
-    public function mypage(){
-        if (Auth::check()) {
-            $user = Auth::user();
-            $items = Item::whereIn('sales_status', [1, 2, 3])->get();
-            return view('auth.mypage', compact('user','items'));
+    public function mypage(Request $request)
+    {
+        $user = Auth::user();   // ログインユーザー情報の取得
+        $myId = Auth::id(); // ログイン中のユーザーID
+        $page = $request->query('page', 'sell'); // デフォルトは 'sell'
+
+        if ($page === 'buy') {
+            $items = Item::whereHas('salesRecord', function($query) use ($myId) {
+                $query->where('buyer_id', $myId);
+            })->get();
+        } else {
+            $items = Item::where('seller_id', $myId)->get();
         }
-        $items = Item::whereIn('sales_status', [1, 2, 3])->get();
-        return view('auth.mypage', compact('items'));
+
+        return view('auth.mypage', compact('items', 'user'));
     }
     // ② 統合更新メソッド（修正）
     public function updateAll(Request $request){

@@ -126,24 +126,43 @@
 }
 
 .item__content--picture-photo{
-    height: 60px;
-    width: 60px;
+    height: 40px;
+    width: 40px;
     border-radius: 50%;
     /* 角を50%丸めることで正円にする */
     object-fit: cover;
     /* 縦横比を崩さずに中央でトリミングする */
-    margin: 0 30px 0 0
+    margin: 0 10px 0 0
 }
 
 .item__content--picture-name{
     font-weight: bold;
 }
 
+.item__comment-list {
+    width: 100%;
+}
+
 .item__content--comment{
     background-color: silver;
     width: 100%;
     padding: 10px;
-    margin: 10px 0 20px;
+    margin: 5px 0 25px;
     font-size: 12px;
+    box-sizing: border-box;     /* パディングや枠線を含めて100%にする（はみ出し防止） */
+    word-break: break-all;      /* 長い文字列でも枠内で自動折り返しする */
+    white-space: pre-wrap;      /* コメント内の改行をそのまま画面に反映させる */
 }
 
+.item__comment--wrap{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.item__content--comment-form{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}

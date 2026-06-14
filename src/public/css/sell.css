@@ -1,16 +1,68 @@
+/* 【修正】既存の指定をこのように変更してください */
 .sell__photo--box {
     background: #fff;
-    padding: 10px;
+    padding: 20px 10px;
+    /* 選択後の上下に余白を持たせるため少し広げました */
     width: 100%;
-    height: 100px;
+    min-height: 100px;
+    /* 💡 height: 100px から min-height に変更（画像が入ると縦に伸びる） */
     margin: 5px 0 30px;
-    border: 2px;
-    appearance: none;
     border: 1px dashed #696969;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
+/* 【追記】中の要素をすべて縦に並べて左右中央揃えにする */
+.sell__photo--inner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* 左右の中央揃え */
+    justify-content: center;
+    /* 上下の中央揃え */
+    width: 100%;
+    gap: 15px;
+    /* ボタンとプレビューエリアの間隔 */
+}
+
+/* プレビューエリア全体の縦並びと中央揃え */
+.sell__photo--preview-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* 左右の中央揃え */
+    gap: 10px;
+    /* ファイル名と画像の間隔 */
+    width: 100%;
+}
+
+/* ファイル名のスタイル */
+.file-info-display {
+    font-size: 14px;
+    color: #555;
+    text-align: center;
+    /* 文字列も中央揃え */
+}
+
+/* プレビュー画像のサイズ制御 */
+.preview-image-container img {
+    max-width: 100%;
+    /* 枠からはみ出さないように縮小 */
+    max-height: 200px;
+    /* 枠内での画像の最大縦幅 */
+    height: auto;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+
+
+
+
+
+
+
 
 .sell__section{
     font-size: 20px;
@@ -28,18 +80,39 @@
     gap: 10px 15px;          /* ボタン同士の上下左右の隙間（数値は自由） */
 }
 
+
+/* 1. チェックボックス本体は画面から隠す */
+.sell__category--checkbox-hidden {
+    display: none;
+}
+
+/* 2. 通常時のボタンのスタイル（共通デザイン＋色） */
 .sell__category--select {
     font-size: 12px;
     padding: 8px 15px;
     display: flex;
-    justify-content: center;    /* 左右の中央揃え */
-    align-items: center;        /* 上下の中央揃え */
+    justify-content: center;
+    /* 左右の中央揃え */
+    align-items: center;
+    /* 上下の中央揃え */
     height: 30px;
-    color: #ff0000;
     border: 2px solid #ff0000;
     border-radius: 30px;
-    white-space: nowrap;    /* ボタン内の文字を絶対に途中で改行させない */
-    flex-shrink: 0;         /* ボタン自体がギュッと潰されるのを防ぐ */
+    white-space: nowrap;
+    /* ボタン内の文字を絶対に途中で改行させない */
+    flex-shrink: 0;
+    /* ボタン自体がギュッと潰されるのを防ぐ */
+    color: #ff0000;
+    cursor: pointer;
+    /* マウスを乗せたときに指マークにする */
+    user-select: none;
+    /* 連打したときに文字が選択（青反転）されるのを防ぐ */
+}
+
+/* 3. 【新設】チェックボックスにチェックが入った時（選択状態）のスタイル */
+.sell__category--checkbox-hidden:checked+.sell__category--select {
+    background-color: red;
+    color: white;
 }
 
 .sell__select-box--wrapper{
