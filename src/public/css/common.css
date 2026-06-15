@@ -157,3 +157,37 @@ a{
 .error-message {
     color: red;
 }
+
+
+
+/* ==========================================================================
+   メルカリ風 SOLDリボン
+   ========================================================================== */
+.item__picture-container {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.sold-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    background-color: #ea352d;
+    /* メルカリレッド */
+    transform: translate(-50%, -50%) rotate(-45deg);
+    transform-origin: 50% 50%;
+    z-index: 10;
+}
+
+.sold-badge span {
+    position: absolute;
+
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #ffffff;
+    font-weight: bold;
+    letter-spacing: 1px;
+}

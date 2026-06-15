@@ -28,8 +28,14 @@
             {{-- 💡 コントローラ側で中身が切り替わっているため、ループ処理はこのままでOKです --}}
             @foreach($items as $item)
             <div class="index__items--box">
-                <div class="index__items--picture">
+                {{-- 💡 画像を囲むdivに、詳細画面と同じクラス「item__picture-container」を追加します --}}
+                <div class="index__items--picture item__picture-container">
                     <img src="storage/images/items/{{ $item->item_image }}">
+                    
+                    {{-- 💡 sales_status が 3（売却済み）の場合にSOLDリボンを表示 --}}
+                    @if($item->sales_status == 3)
+                        <div class="sold-badge"><span>SOLD</span></div>
+                    @endif
                 </div>
                 <div class="index__items--name">
                     <a href="{{ route('items.show', ['item' => $item->id]) }}">

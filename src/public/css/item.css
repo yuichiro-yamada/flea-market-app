@@ -166,3 +166,79 @@
     display: flex;
     flex-direction: column;
 }
+
+
+
+/* ==========================================================================
+   メルカリ風 SOLDリボン　　　サイズ調整
+   ========================================================================== */
+.sold-badge {
+    width: 220px;
+    /* 元は100px */
+    height: 220px;
+    /* 元は100px */
+}
+
+.sold-badge span {
+    bottom: 15px;
+    /* 元は８px */
+}
+
+.sold-badge span {
+    font-size: 32px;
+    /* 💡 16px から 32px に拡大 */
+}
+
+
+
+/* ==========================================================================
+   JS不要の完了モーダル
+   ========================================================================== */
+/* チェックボックスのチェックが外れたらマスクごと非表示にする */
+#modal-trigger:not(:checked)~.modal-overlay {
+    display: none;
+}
+
+/* 背景を薄暗くするマスク */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+
+/* モーダルの白箱 */
+.modal-content {
+    background: #ffffff;
+    padding: 40px;
+    text-align: center;
+    border-radius: 8px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal-text {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #333333;
+}
+
+/* 閉じるラベル（ボタンに見えるように装飾） */
+.modal-close-btn {
+    display: block;
+    width: 100%;
+    padding: 12px 0;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-radius;
+}

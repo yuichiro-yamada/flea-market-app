@@ -6,7 +6,12 @@
 
 @section('content')
 <div class="item__form">
-    <img src="/images/items/{{ $item->item_image }}" class="item__picture--photo">
+    <div class="item__picture-container" style="position: relative; display: inline-block; overflow: hidden;">
+        <img src="/storage/images/items/{{ $item->item_image }}" class="item__picture--photo">
+        @if($item->sales_status == 3)
+            <div class="sold-badge"><span>SOLD</span></div>
+        @endif
+    </div>
     <div class="item__content">
         <h1>{{ $item->item_name }}</h1>
         <div class="item__content--brand">{{ $item->brand_name }}</div>
@@ -54,7 +59,12 @@
                 </div>
             </div>
         </div>
-        <button class="common__button">購入手続きへ</button>
+        @if($item->sales_status == 3)
+            <button class="common__button" disabled style="background-color: #cccccc; cursor: not-allowed;">売り切れました</button>
+        @else
+            <a href="{{ route('purchase.show', ['item_id' => $item->id]) }}" class="common__button" style="text-align: center; text-decoration: none; display: block;">購入手続きへ</a>
+        @endif
+
         <h2>商品説明</h2>
         <div>{{ $item->item_detail }}</div>
         <h2>商品の情報</h2>
@@ -93,23 +103,39 @@
         </div>
 
         {{-- 💡 3. コメント入力エリア（ログインユーザーのみに表示） --}}
+        {{-- 💡 【修正】コメント入力エリア（ログインかつ未売却時のみ表示） --}}
         @auth
-        <div>商品へのコメント</div>
-        <form action="{{ route('comments.store', $item) }}" class="item__content--comment-form" method="POST">
-
-            @csrf
-            {{-- エラーメッセージ表示用のエリア --}}
-            @error('comment')
-                <div style="color: red;">{{ $message }}</div>
-            @enderror
-            
-            <textarea name="comment" class="common__input-textbox" required placeholder="コメントを入力してください"></textarea>
-            <button type="submit" class="common__button">コメントを送信する</button>
-        </form>
+            @if($item->sales_status == 3)
+                {{-- 💡 売り切れ時はコメント入力フォーム自体を非表示にします --}}
+            @else
+                <div>商品へのコメント</div>
+                <form action="{{ route('comments.store', $item) }}" class="item__content--comment-form" method="POST">
+                    @csrf
+                    @error('comment')
+                        <div style="color: red;">{{ $message }}</div>
+                    @enderror
+                    <textarea name="comment" class="common__input-textbox" required placeholder="コメントを入力してください"></textarea>
+                    <button type="submit" class="common__button">コメントを送信する</button>
+                </form>
+            @endif
         @else
-        {{-- 未ログインユーザーには入力欄を見せず、案内メッセージなどを出す場合（不要ならこの@else以降は削除してOKです） --}}
-        <p style="color: #666; margin-top: 20px;">※コメントを投稿するには<a href="{{ route('login') }}">ログイン</a>が必要です。</p>
+            @if($item->sales_status != 3)
+                <p style="color: #666; margin-top: 20px;">※コメントを投稿するには<a href="{{ route('login') }}">ログイン</a>が必要です。</p>
+            @endif
         @endauth
     </div>
 </div>
+
+{{-- 💡 【追加】購入完了時のみ表示されるHTML＆CSSモーダル（JS完全不要） --}}
+@if(session('purchase_completed'))
+<div class="modal-wrapper">
+    <input type="checkbox" id="modal-trigger" checked style="display: none;">
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <p class="modal-text">購入が完了しました</p>
+            <label for="modal-trigger" class="common__button modal-close-btn">閉じる</label>
+        </div>
+    </div>
+</div>
+@endif
 @endsection

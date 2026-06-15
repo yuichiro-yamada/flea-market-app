@@ -44,8 +44,14 @@
         @else
             @foreach($items as $item)
             <div class="index__items--box">
-                <div class="index__items--picture">
-                    <img src="{{ asset('storage/images/items/' . $item->item_image) }}">
+                {{-- 💡 親のdivに position: relative と overflow: hidden を直接インラインで強制指定します --}}
+                <div class="index__items--picture" style="position: relative !important; overflow: hidden !important; display: inline-block; width: 100%;">
+                    <img src="{{ asset('storage/images/items/' . $item->item_image) }}" style="width: 100%; display: block;">
+                    
+                    {{-- 💡 クラス名は元々の設計通り「sold-badge」にします --}}
+                    @if($item->sales_status == 3)
+                        <div class="sold-badge"><span>SOLD</span></div>
+                    @endif
                 </div>
                 <div class="index__items--name">
                     {{ $item->item_name }}
