@@ -25,6 +25,7 @@ class UsersTableSeeder extends Seeder
                 'address'      => '東京都千代田区東町１−２−３',
                 'building'     => '千代田プラザマンション３０５号室',
                 'is_withdrawn' => 0,
+                'email_verified_at' => now(), 
             ],
             [
                 'member_name'  => '田中二郎',
@@ -35,6 +36,7 @@ class UsersTableSeeder extends Seeder
                 'address'      => '神奈川県横浜市港北区西１−２−３',
                 'building'     => '港北タワーマンション４０２号室',
                 'is_withdrawn' => 0,
+                'email_verified_at' => now(), 
             ],
             [
                 'member_name'  => '佐藤三郎',
@@ -45,6 +47,7 @@ class UsersTableSeeder extends Seeder
                 'address'      => '千葉県千葉市美浜区南町３−５−１',
                 'building'     => '美浜ニュータウンマンション１０２号室',
                 'is_withdrawn' => 0,
+                'email_verified_at' => now(), 
             ],
             [
                 'member_name'  => '小野四郎',
@@ -55,6 +58,7 @@ class UsersTableSeeder extends Seeder
                 'address'      => '埼玉県さいたま市中央区北町４−７−３',
                 'building'     => 'さいたまの森マンション３０６号室',
                 'is_withdrawn' => 0,
+                'email_verified_at' => now(), 
             ],
         ];
 

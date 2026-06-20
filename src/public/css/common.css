@@ -30,24 +30,22 @@
     padding: 10px;
     margin-left: 20px;
     width: 400px;
+    height:40px;
     border-radius: 3px;
-    appearance: none;
 }
 
 .header__right {
     display: flex;
-    align-content: flex-end;
-}
-
-.header__right--position{
-    display: flex;
-    align-items: center;
+    justify-content: flex-end;
+    width:300px;
 }
 
 .header__right--menu{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     color: #fff;
-    width:120px;
-
+    width:100px;
 }
 
 .header__right--btn {
@@ -64,9 +62,12 @@
 }
 
 .header__button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 10px;
-    width: 30%;
-    height: 50px;
+    width: 70px;
+    height: 40px;
     border: none;
     border-radius: 3px;
     background: #fff;

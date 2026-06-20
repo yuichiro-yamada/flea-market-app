@@ -20,19 +20,14 @@ use App\Http\Controllers\FavoriteController;
 |
 */
 
-Route::get('/login',[AuthController::class,'loginView'])->name('login');
-Route::post('/login',[AuthController::class,'login']);
-Route::get('/', [ItemController::class, 'index'])->name('index');
-Route::get('/register',[AuthController::class,'create']);
-Route::post('/register',[AuthController::class,'store']);
 
+Route::get('/', [ItemController::class, 'index'])->name('index');
 Route::get('/item/{item}', [ItemController::class, 'show'])->name('items.show');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/mypage',[UserController::class,'mypage'])->name('mypage');
     Route::get('/mypage/profile', [UserController::class, 'profile'])->name('profile');
     Route::post('/profile/update', [UserController::class, 'updateAll'])->name('profile.update.all');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // いいね登録
     Route::post('/item/{item}/favorite', [FavoriteController::class, 'store'])->name('favorites.store');
@@ -41,12 +36,10 @@ Route::middleware('auth')->group(function () {
     // コメント送信用のルートを追加
     Route::post('/item/{item}/comment', [ItemController::class, 'storeComment'])->name('comments.store');
 
-    Route::get('/sell',[SellController::class,'sell']);
-
-        // 出品画面を表示する（GET）
+    // 出品画面を表示する（GET）
     Route::get('/sell', [SellController::class, 'sell'])->name('sell');
 
-    // ★【追加】画像選択時のリロードや、最終保存を受け取る（POST）
+    // 画像選択時のリロードや、最終保存を受け取る（POST）
     // コントローラーの「store」メソッドにデータを送るようにします
     Route::post('/sell', [SellController::class, 'store'])->name('sell.store');
 
@@ -61,11 +54,22 @@ Route::middleware('auth')->group(function () {
 
 });
 
-
+// Breeze（auth.php）の中に
+// ログイン画面（/login)と新規登録画面(/register）をログアウト（/logout）を
+// 表示・処理するためのURLとルートが用意さされている
+require __DIR__.'/auth.php';
 
 
 
 /*
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/login',[AuthController::class,'loginView'])->name('login');
+Route::get('/register',[AuthController::class,'create']);
+Route::post('/login',[AuthController::class,'login']);
+Route::post('/register',[AuthController::class,'store']);
+
+
+
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 
     Route::patch('/index', [UserController::class, 'update']);

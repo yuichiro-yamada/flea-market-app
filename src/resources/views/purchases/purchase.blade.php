@@ -66,4 +66,5 @@
         <button type="submit" class="common__button" style="width: 100%; border: none; cursor: pointer;">購入する</button>
     </div>
 </form>
+
 @endsection

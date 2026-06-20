@@ -9,38 +9,49 @@ use App\Models\Review;
 
 class ItemController extends Controller
 {
-    public function index(Request $request)
-    {
-        // 1. 表示可能なすべての商品の基本クエリ（販売中などのステータス）
-        $query = Item::whereIn('sales_status', [1, 2, 3]);
+public function index(Request $request)
+{
+    // 1. 表示可能なすべての商品の基本クエリ
+    $query = Item::whereIn('sales_status', [1, 2, 3]);
 
-        // 2. 【追加】ログインしている場合、「おすすめ」でも「マイリスト」でも、自分の出品商品は一切表示しない
+    // 2. ログインしている場合、自分の出品商品は一切表示しない
+    if (Auth::check()) {
+        $query->where('seller_id', '!=', Auth::id());
+    }
+    //　　2.5】検索キーワードがある場合、部分一致で絞り込む
+    // ヘッダーの name="keyword" の値を受け取ります
+    if ($request->filled('keyword')) {
+        $keyword = $request->query('keyword');
+        $query->where('item_name', 'LIKE', "%{$keyword}%");
+    }
+
+    // 💡 3. 【修正】URLに ?tab=mylist がある場合の処理（ログイン・未ログイン両方対応）
+    if ($request->query('tab') === 'mylist') {
         if (Auth::check()) {
-            $query->where('seller_id', '!=', Auth::id());
-        }
-
-        // 3. URLに ?tab=mylist があり、かつログインしている場合
-        if ($request->query('tab') === 'mylist' && Auth::check()) {
             $user = Auth::user();
-            
             // ログインユーザーがお気に入りした商品だけに絞り込む
             $query->whereHas('favoritedByUsers', function($q) use ($user) {
                 $q->where('user_id', $user->id);
             });
-            
             $items = $query->get();
             return view('index', compact('user', 'items'));
+        } else {
+            // ❌ 未ログインの場合：お気に入りはないので、空のコレクション（データなし）にして返す
+            $items = collect();
+            return view('index', compact('items'));
         }
-
-        // 4. 通常時（おすすめタブ、または未ログイン時）の処理
-        $items = $query->get();
-        
-        if (Auth::check()) {
-            $user = Auth::user();
-            return view('index', compact('user', 'items'));
-        }
-        return view('index', compact('items'));
     }
+
+    // 4. 通常時（おすすめタブ）の処理
+    $items = $query->get();
+    
+    if (Auth::check()) {
+        $user = Auth::user();
+        return view('index', compact('user', 'items'));
+    }
+    return view('index', compact('items'));
+}
+
 
     public function show(Item $item){
         // 商品（$item）に紐づいている「カテゴリ一覧」と「レビュー一覧」のデータをDBからまとめて一気に取得

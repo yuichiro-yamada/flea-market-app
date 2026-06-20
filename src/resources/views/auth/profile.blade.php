@@ -20,7 +20,7 @@
                         ? '/storage/' . session('tmp_image_path') 
                         : ($user->member_image && file_exists(public_path('storage/images/profile/' . $user->member_image))
                             ? '/storage/images/profile/' . $user->member_image 
-                            : '/images/profile/silver.png') 
+                            : '/storage/images/profile/silver.png') 
                 }}" class="common__picture--photo">
                 <div>
                     <div class="profile__picture--select">画像を選択する</div>

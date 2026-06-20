@@ -19,24 +19,30 @@
           <img src="/images/header_logo.png">
         </a>
         <div class="header__search">
-          <input type="search" name="search" value="" placeholder="何をお探しですか？" >
-        </div>
-      </div>
-      <div class="header__right">
-        <div class="header__right--position">
-          <form action="/logout" method="post">
-            @csrf
-            @auth
-              <button type="submit" class="header__right--menu header__right--btn">ログアウト</button>
-            @endauth
-            @guest
-              <a href="/login" class="header__right--menu header__right--position">ログイン</a>
-            @endguest
+          <form action="{{ route('index') }}" method="GET">
+              @if(request('tab') === 'mylist')
+                  <input type="hidden" name="tab" value="mylist">
+              @endif
+              <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="なにをお探しですか？">
           </form>
         </div>
-        <a href="/mypage" class="header__right--menu header__right--position">マイページ</a>
-        <a href="/sell" class="header__button">出品</a>
       </div>
+
+
+      <form action="/logout" method="post" class="header__right">
+        @csrf
+        @auth
+          <button type="submit" class="header__right--menu header__right--btn">ログアウト</button>
+        @endauth
+        @guest
+          <a href="/login" class="header__right--menu">ログイン</a>
+        @endguest
+
+
+        <a href="/mypage" class="header__right--menu">マイページ</a>
+        <a href="/sell" class="header__button">出品</a>
+      </form>
+
     </div>
   </header>
 

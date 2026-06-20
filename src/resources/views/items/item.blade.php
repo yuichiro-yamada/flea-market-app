@@ -62,7 +62,7 @@
         @if($item->sales_status == 3)
             <button class="common__button" disabled style="background-color: #cccccc; cursor: not-allowed;">売り切れました</button>
         @else
-            <a href="{{ route('purchase.show', ['item_id' => $item->id]) }}" class="common__button" style="text-align: center; text-decoration: none; display: block;">購入手続きへ</a>
+            <a href="{{ route('purchase.show', ['item_id' => $item->id]) }}" class="common__button">購入手続きへ</a>
         @endif
 
         <h2>商品説明</h2>
@@ -126,7 +126,7 @@
     </div>
 </div>
 
-{{-- 💡 【追加】購入完了時のみ表示されるHTML＆CSSモーダル（JS完全不要） --}}
+{{-- 購入完了時のみ表示されるモーダル --}}
 @if(session('purchase_completed'))
 <div class="modal-wrapper">
     <input type="checkbox" id="modal-trigger" checked style="display: none;">
@@ -138,4 +138,18 @@
     </div>
 </div>
 @endif
+
+{{-- 購入済み商品の場合のみ表示されるモーダル --}}
+@if(session('purchase_error'))
+<div class="modal-wrapper">
+    <input type="checkbox" id="modal-trigger" checked style="display: none;">
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <p class="modal-text">この商品は売り切れ、または、購入できません</p>
+            <label for="modal-trigger" class="common__button modal-close-btn">閉じる</label>
+        </div>
+    </div>
+</div>
+@endif
+
 @endsection

@@ -20,6 +20,8 @@ class UserController extends Controller
             session(['from_url' => url()->previous()]);
         }
 
+        session(['from_url' => url()->previous()]);
+
         return view('auth.profile', compact('user'));
     }
     public function mypage(Request $request)
@@ -93,8 +95,8 @@ class UserController extends Controller
             // 使い終わったセッションを削除して綺麗にする
             session()->forget('from_url');
 
-            // URLに「/register」が含まれているかどうかで判定
-            if (str_contains($fromUrl, '/register')) {
+            // URLに「/register」または「/verify-email」が含まれているかどうかで判定
+            if (str_contains($fromUrl, '/register') || str_contains($fromUrl, '/verify-email')) {
                 return redirect()->route('index')->with('success', 'プロフィールを更新しました！');
             } else {
                 return redirect()->route('mypage')->with('success', 'プロフィールを更新しました！');

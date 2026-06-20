@@ -11,19 +11,24 @@
             @if(request()->query('tab') !== 'mylist')
                 <div class="index__menu--link-red">おすすめ</div>
             @else
-                <a href="/" class="index__menu--link">おすすめ</a>
+                <a href="/?{{ http_build_query(array_merge(request()->query(), ['tab' => null])) }}" class="index__menu--link">おすすめ</a>
             @endif
 
-            {{-- 💡 現在のURLに tab=mylist が「ある」ときは、マイリストを赤文字（アクティブ）にする --}}
+            {{-- 現在のURLに tab=mylist が「ある」ときは、マイリストを赤文字（アクティブ）にする --}}
             @if(request()->query('tab') === 'mylist')
                 <div class="index__menu--link-red">マイリスト</div>
             @else
-                <a href="/?tab=mylist" class="index__menu--link">マイリスト</a>
+                <a href="/?{{ http_build_query(array_merge(request()->query(), ['tab' => 'mylist'])) }}" class="index__menu--link">マイリスト</a>
             @endif
         </div>
     </div>
     
     <div class="index__items--wrapper">
+        @if(request()->filled('keyword'))
+            <div class="index__search-keyword">
+                検索キーワード：{{ request()->query('keyword') }}
+            </div>
+        @endif
         <div class="index__items--row">
             {{-- 💡 コントローラ側で中身が切り替わっているため、ループ処理はこのままでOKです --}}
             @foreach($items as $item)

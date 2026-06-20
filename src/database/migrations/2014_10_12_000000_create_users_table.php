@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('building',255)->nullable();
             // 退会フラグ（デフォルトは退会していない状態の false）
             $table->boolean('is_withdrawn')->default(false);
-            // nullable() をつけることで、初回ログイン前は自動的に null が入る
-            $table->timestamp('last_login_at')->nullable();
+            // メール認証を完了した日付
+            $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
         });
     }
