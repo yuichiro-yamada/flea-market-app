@@ -17,3 +17,9 @@
     border: 2px solid #ff0000;
     border-radius: 40px;
 }
+
+.profile__file-info--display{
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;"
+}

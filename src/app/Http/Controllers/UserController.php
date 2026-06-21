@@ -14,16 +14,28 @@ class UserController extends Controller
     public function profile(){
         $user = Auth::user();
 
-        // 画像選択のリロード時は記憶を上書きしないように条件分岐
-        // 直前のURLが「自分自身（/profile）」ではない場合のみ、本当の前のURL（/registerなど）をセッションに保存
-        if (!str_contains(url()->previous(), '/profile')) {
-            session(['from_url' => url()->previous()]);
-        }
+        // 1. 直前の長いフルURLを取得する
+        $previousUrl = url()->previous();
 
-        session(['from_url' => url()->previous()]);
+        // 2. 直前のURLが「自分自身（profile）」を含まない、本当の移動元である時だけ記憶する
+        if (!str_contains($previousUrl, 'profile')) {
+            
+            $fromUrlValue = '';
+
+            // 長い認証URLや登録URLの中から、キーワードだけを確実に抜き出す
+            if (str_contains($previousUrl, 'verify-email')) {
+                $fromUrlValue = '/verify-email';
+            } elseif (str_contains($previousUrl, 'register')) {
+                $fromUrlValue = '/register';
+            }
+
+            // 綺麗な文字（/verify-email や /register）をセッションにカチッと保存する
+            session(['from_url' => $fromUrlValue]);
+        }
 
         return view('auth.profile', compact('user'));
     }
+
     public function mypage(Request $request)
     {
         $user = Auth::user();   // ログインユーザー情報の取得
@@ -57,9 +69,11 @@ class UserController extends Controller
 
                 return redirect()->back()
                     ->withInput() 
+                    // 元のURLをセッション（->with([...])：次の画面にのみ保持されるフラッシュデータ）に保持する
                     ->with([
                         'tmp_image_name' => $originalName,
-                        'tmp_image_path' => $tmpPath
+                        'tmp_image_path' => $tmpPath,
+                        'from_url' => $request->input('from_url')
                     ]);
             }
             return redirect()->back()->withInput();
@@ -89,14 +103,16 @@ class UserController extends Controller
                 }
             }
 
-            // ★【ここを修正】セッションから前のURLを取り出してルートを判定する
-            $fromUrl = session('from_url', '');
+            // form送信内容に（hiddenで埋め込まれた）from_urlがあるかを確認、
+            // なければsessionのform_urlの値を使う
+            // （セッションでの情報受渡は不安定、formの受け渡しの方が確実）
+            $fromUrl = $request->input('from_url') ?: session('from_url', '');
 
             // 使い終わったセッションを削除して綺麗にする
             session()->forget('from_url');
 
             // URLに「/register」または「/verify-email」が含まれているかどうかで判定
-            if (str_contains($fromUrl, '/register') || str_contains($fromUrl, '/verify-email')) {
+            if (str_contains($fromUrl, 'register') || str_contains($fromUrl, 'verify-email')) {
                 return redirect()->route('index')->with('success', 'プロフィールを更新しました！');
             } else {
                 return redirect()->route('mypage')->with('success', 'プロフィールを更新しました！');
