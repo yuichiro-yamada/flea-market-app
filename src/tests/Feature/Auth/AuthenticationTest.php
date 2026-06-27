@@ -1,55 +1,118 @@
 <?php
 
-namespace Tests\Feature\Auth;
+namespace Tests\Feature;
 
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_login_screen_can_be_rendered(): void
+    /**
+     * 1. メールアドレスが入力されていない場合、バリデーションメッセージが表示される
+     */
+    public function test_email_is_required_for_login()
     {
+        // ログイン画面を開く
         $response = $this->get('/login');
-
         $response->assertStatus(200);
-    }
 
-    public function test_users_can_authenticate_using_the_login_screen(): void
-    {
-        $user = User::factory()->create();
-
+        // メールアドレスを空にしてPOST送信
         $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
+            'email' => '',
+            'password' => 'password123',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(RouteServiceProvider::HOME);
+        // バリデーションエラーがあるか検証
+        $response->assertSessionHasErrors(['email']);
+        
+        // ログイン画面へ戻った後、メッセージが表示されているか検証
+        $response = $this->get('/login');
+        $response->assertSee('メールアドレスを入力してください');
     }
 
-    public function test_users_can_not_authenticate_with_invalid_password(): void
+    /**
+     * 2. パスワードが入力されていない場合、バリデーションメッセージが表示される
+     */
+    public function test_password_is_required_for_login()
     {
-        $user = User::factory()->create();
-
-        $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'wrong-password',
+        // パスワードを空にしてPOST送信
+        $response = $this->post('/login', [
+            'email' => 'test@example.com',
+            'password' => '',
         ]);
 
-        $this->assertGuest();
+        // バリデーションエラーがあるか検証
+        $response->assertSessionHasErrors(['password']);
+
+        // ログイン画面へ戻った後、メッセージが表示されているか検証
+        $response = $this->get('/login');
+        $response->assertSee('パスワードを入力してください');
     }
 
-    public function test_users_can_logout(): void
+    /**
+     * 3. 入力情報が間違っている場合、バリデーションメッセージが表示される
+     */
+    public function test_invalid_credentials_display_error_message()
     {
-        $user = User::factory()->create();
+        // 登録されていない情報をPOST送信
+        $response = $this->post('/login', [
+            'email' => 'wrong@example.com',
+            'password' => 'wrongpassword',
+        ]);
 
-        $response = $this->actingAs($user)->post('/logout');
+        // 認証失敗のエラーメッセージがセッションにあるか検証（Laravelデフォルトのauth.failed等、または設定したキー）
+        $response->assertSessionHasErrors();
 
-        $this->assertGuest();
+        // ログイン画面へ戻った後、指定のメッセージが表示されているか検証
+        $response = $this->get('/login');
+        $response->assertSee('ログイン情報が登録されていません');
+    }
+
+    /**
+     * 4. 正しい情報が入力された場合、ログイン処理が実行される
+     */
+    public function test_valid_credentials_can_login()
+    {
+        // テスト用のユーザーを作成
+        $user = User::factory()->create([
+            'email' => 'auth_test@example.com',
+            'password' => Hash::make('password123'), // パスワードをハッシュ化して保存
+        ]);
+
+        // 正しい情報を入力してPOST送信
+        $response = $this->post('/login', [
+            'email' => 'auth_test@example.com',
+            'password' => 'password123',
+        ]);
+
+        // 指定のリダイレクト先（http://localhost/）に遷移するか検証
         $response->assertRedirect('/');
+
+        // ユーザーが認証（ログイン状態）されているか検証
+        $this->assertAuthenticatedAs($user);
+    }
+
+    /**
+     * 5. ログアウトができる
+     */
+    public function test_user_can_logout()
+    {
+        // テスト用のユーザーを作成してログイン状態にする
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        // ログアウトURLにPOST送信
+        $response = $this->post('/logout');
+
+        // ログアウト後の遷移先（通常はトップ画面やログイン画面）を検証
+        // ※もし別の場所に遷移する場合は適宜URLを変更してください
+        $response->assertRedirect('/');
+
+        // ユーザーがログアウト（未認証状態）されているか検証
+        $this->assertGuest();
     }
 }

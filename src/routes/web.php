@@ -43,9 +43,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // コントローラーの「store」メソッドにデータを送るようにします
     Route::post('/sell', [SellController::class, 'store'])->name('sell.store');
 
+    // 画像一時アップロード専用のルートを新しく追加
+    Route::post('/sell/upload', [SellController::class, 'uploadImage'])->name('sell.upload');
+
     Route::get('/purchase/{item_id}', [PurchaseController::class, 'showPurchase'])->name('purchase.show');
     // 💡 【追加】ボタンを押した時のPOSTルート（保存用）
     Route::post('/purchase/{item_id}', [PurchaseController::class, 'storePurchase'])->name('purchase.store');
+
+    // ルーティングを追加（コントローラー名はご自身の環境に合わせてください）
+    Route::patch('/purchase/{item_id}', [PurchaseController::class, 'updatePaymentMethod'])->middleware('auth');
 
     // 💡 【追加】住所変更画面を表示するルート
     Route::get('/purchase/address/{item_id}', [PurchaseController::class, 'editAddress'])->name('address.edit');

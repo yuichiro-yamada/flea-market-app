@@ -28,6 +28,14 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
+        // ログインしたユーザーを取得してカラムをnullにする
+        $user = auth()->user();
+        $user->update([
+            'shipping_postcode' => null,
+            'shipping_address' => null,
+            'shipping_building' => null,
+        ]);
+
         // ログインしたユーザーが、メール認証を「すでに済ませているか」をチェック
         if ($request->user()->hasVerifiedEmail()) {
             // ① 認証済みなら、予定通り商品一覧画面（/）へ進む

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ReviewRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Item;
@@ -61,7 +62,7 @@ public function index(Request $request)
         // 「カテゴリ」「レビュー一覧」「それぞれの件数」を含んだ変数 $item をbladeに送る
         return view('items/item', compact('item'));
     }
-    public function storeComment(Request $request, Item $item)
+    public function storeComment(ReviewRequest $request, Item $item)
     {
         // バリデーション（空欄チェック）
         $request->validate([

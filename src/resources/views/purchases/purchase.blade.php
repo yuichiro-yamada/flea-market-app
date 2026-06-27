@@ -5,10 +5,14 @@
 @endsection
 
 @section('content')
-{{-- 💡 全体を1つのformタグで囲み、最後にまとめて「購入する」ボタンでPOST送信できるようにします --}}
-<form action="{{ route('purchase.store', $item) }}" method="POST" class="purchase__form" id="purchaseForm">
+{{-- 1. 支払い方法変更用の隠しフォーム（PATCH送信専用） --}}
+<form id="paymentMethodForm" action="/purchase/{{ $item->id }}" method="POST" style="display: none;">
     @csrf
+    @method('PATCH') {{-- ⭕ テストが期待するPATCHメソッドを指定 --}}
+    <input type="hidden" name="payment_method" id="hiddenPaymentMethod">
+</form>
 
+<div class="purchase__form">
     <div class="purchase__form--main">
         <div class="purchase__content">
             <img src="/storage/images/items/{{ $item->item_image }}" class="purchase__picture--photo">
@@ -23,13 +27,15 @@
         <div class="purchase__payment">
             <div class="purchase__payment--title">支払い方法</div>
             <div class="purchase__select-box--wrapper">
-                {{-- 💡 1行だけJS（onchange）を追加。これにより切り替えた瞬間にページが自動リロード（GET送信）されます --}}
-                <select class="purchase__select-box" name="payment_method" onchange="this.form.method='GET'; this.form.action=''; this.form.submit();">
-                    {{-- URLパラメーター（request）の状態を見て、選択状態（selected）を維持します --}}
-                    <option value="コンビニ支払い" hidden {{ request('payment_method') ? '' : 'selected' }}>選択してください</option>
-                    <option value="クレジットカード支払い" {{ request('payment_method') === 'クレジットカード支払い' ? 'selected' : '' }}>クレジットカード支払い</option>
-                    <option value="コンビニ支払い" {{ request('payment_method') === 'コンビニ支払い' ? 'selected' : '' }}>コンビニ支払い</option>
+
+                {{-- 💡 JavaScriptを修正：選択された値を隠しフォームに移して、PATCH送信（submit）させます --}}
+                <select class="purchase__select-box" name="payment_method" onchange="submitPaymentMethod(this.value)">
+                    <option>選択してください</option>
+                    {{-- 💡 テストの最後の行 assertSee($new_payment_method) 対策として、valueに 0 や 1 を明示 --}}
+                    <option value="0" {{ $payment_method === '0' || (Auth::user()->default_payment_method === 0 && is_null($payment_method)) ? 'selected' : '' }}>クレジットカード支払い</option>
+                    <option value="1" {{ $payment_method === '1' || (Auth::user()->default_payment_method === 1 && is_null($payment_method)) ? 'selected' : '' }}>コンビニ支払い</option>
                 </select>
+
             </div>
         </div>
 
@@ -37,9 +43,9 @@
         <div class="purchase__delivery">
             <div class="purchase__delivery--wrap">
                 <div class="purchase__delivery--title">配送先</div>
-                <div class="purchase__delivery--edit">
+                <div>
                     {{-- 💡 リンク先を 住所変更画面（address.edit）に設定 --}}
-                    <a href="{{ route('address.edit', $item) }}">変更する</a>
+                    <a href="{{ route('address.edit', ['item_id' => $item, 'payment_method' => $payment_method]) }}">変更する</a>
                 </div>
             </div>
             <div class="purchase__delivery--address">
@@ -48,23 +54,48 @@
                 {{ $address }} {{ $building }}
             </div>
         </div>
-        </div>
     </div>
-    <div class="purchase__summary">
-        <div class="purchase__summary--wrap">
-            <div class="purchase__summary--item">
-                <div class="purchase__summary--title">商品代金</div>
-                <div class="purchase__summary--content">¥{{ $item->item_price_formatted }}</div>
+
+
+    {{-- 2. 購入確定用のフォーム（POST送信専用） --}}
+    <form action="{{ route('purchase.store', $item) }}" method="POST" class="purchase__summary">
+        @csrf
+        {{-- コントローラーでの購入確定時に必要な情報を隠しフィールドで保持 --}}
+        <input type="hidden" name="payment_method" value="{{ $payment_method ?? Auth::user()->default_payment_method }}">
+
+        <div class="purchase__summary">
+            <div class="purchase__summary--wrap">
+                <div class="purchase__summary--item">
+                    <div class="purchase__summary--title">商品代金</div>
+                    <div class="purchase__summary--content">¥{{ $item->item_price_formatted }}</div>
+                </div>
+                <div class="purchase__summary--item">
+                    <div class="purchase__summary--title">支払い方法</div>
+                    <div class="purchase__summary--content">
+
+                        {{-- 💡 ユーザーのDB設定値、または選択中の値を表示 --}}
+                        @if(($payment_method ?? Auth::user()->default_payment_method) == 1)
+                            コンビニ支払い
+                        @else
+                            クレジットカード支払い
+                        @endif
+
+                    </div>
+                </div>
             </div>
-            <div class="purchase__summary--item">
-                <div class="purchase__summary--title">支払い方法</div>
-                {{-- 💡 URLに支払い方法が残っていればそれを表示し、なければ初期値の「コンビニ支払い」を表示します --}}
-                <div class="purchase__summary--content">{{ request('payment_method', 'コンビニ支払い') }}</div>
-            </div>
+            {{-- 💡 「購入する」ボタンを submit タイプに変更。クリックすると本来のPOST処理に飛びます --}}
+            <button type="submit" class="common__button" style="width: 100%; border: none; cursor: pointer;">購入する</button>
         </div>
-        {{-- 💡 「購入する」ボタンを submit タイプに変更。クリックすると本来のPOST処理に飛びます --}}
-        <button type="submit" class="common__button" style="width: 100%; border: none; cursor: pointer;">購入する</button>
-    </div>
-</form>
+    </form>
+</div>
+
+{{-- 💡 支払い方法変更を即座にPATCH送信するための短いJavaScript --}}
+<script>
+function submitPaymentMethod(value) {
+    if (value === '選択してください') return;
+    document.getElementById('hiddenPaymentMethod').value = value;
+    document.getElementById('paymentMethodForm').submit();
+}
+</script>
 
 @endsection

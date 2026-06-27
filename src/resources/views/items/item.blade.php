@@ -109,12 +109,12 @@
                 {{-- 💡 売り切れ時はコメント入力フォーム自体を非表示にします --}}
             @else
                 <div>商品へのコメント</div>
-                <form action="{{ route('comments.store', $item) }}" class="item__content--comment-form" method="POST">
+                <form action="{{ route('comments.store', $item) }}" class="item__content--comment-form" method="POST" novalidate>
                     @csrf
+                    <textarea name="comment" class="common__input-textbox" required placeholder="コメントを入力してください"></textarea>
                     @error('comment')
                         <div style="color: red;">{{ $message }}</div>
                     @enderror
-                    <textarea name="comment" class="common__input-textbox" required placeholder="コメントを入力してください"></textarea>
                     <button type="submit" class="common__button">コメントを送信する</button>
                 </form>
             @endif
@@ -125,19 +125,6 @@
         @endauth
     </div>
 </div>
-
-{{-- 購入完了時のみ表示されるモーダル --}}
-@if(session('purchase_completed'))
-<div class="modal-wrapper">
-    <input type="checkbox" id="modal-trigger" checked style="display: none;">
-    <div class="modal-overlay">
-        <div class="modal-content">
-            <p class="modal-text">購入が完了しました</p>
-            <label for="modal-trigger" class="common__button modal-close-btn">閉じる</label>
-        </div>
-    </div>
-</div>
-@endif
 
 {{-- 購入済み商品の場合のみ表示されるモーダル --}}
 @if(session('purchase_error'))

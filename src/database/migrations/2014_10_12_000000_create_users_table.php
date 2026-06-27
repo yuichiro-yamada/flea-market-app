@@ -20,6 +20,10 @@ return new class extends Migration
             $table->string('postcode',7)->nullable();
             $table->string('address',255)->nullable();
             $table->string('building',255)->nullable();
+            $table->string('shipping_postcode',7)->nullable();
+            $table->string('shipping_address',255)->nullable();
+            $table->string('shipping_building',255)->nullable();
+            $table->unsignedTinyInteger('default_payment_method')->default(1);
             // 退会フラグ（デフォルトは退会していない状態の false）
             $table->boolean('is_withdrawn')->default(false);
             // メール認証を完了した日付

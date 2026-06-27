@@ -28,6 +28,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'postcode',
         'address',
         'building',
+        'shipping_postcode',
+        'shipping_address',
+        'shipping_building',
+        'default_payment_method',
         'is_withdrawn',
     ];
 

@@ -62,4 +62,17 @@
     </div>
 </div>
 
+{{-- 購入完了時のみ表示されるモーダル --}}
+@if(session('purchase_completed'))
+<div class="modal-wrapper">
+    <input type="checkbox" id="modal-trigger" checked style="display: none;">
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <p class="modal-text">購入が完了しました</p>
+            <label for="modal-trigger" class="common__button modal-close-btn">閉じる</label>
+        </div>
+    </div>
+</div>
+@endif
+
 @endsection

@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Item extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'seller_id',
         'item_name',
@@ -36,11 +38,11 @@ class Item extends Model
         $value = $this->condition ?? null;
 
         return match ($value) {
-            1 => '新品・未使用',
-            2 => '未使用に近い',
+            1 => '状態が悪い',
+            2 => 'やや傷や汚れあり',
             3 => '目立った傷や汚れなし',
-            4 => 'やや傷や汚れあり',
-            default => '全体的に状態が悪い',
+            4 => '良好',
+            default => '不明',
         };
     }
 
