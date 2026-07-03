@@ -38,11 +38,11 @@ class AuthenticatedSessionController extends Controller
 
         // ログインしたユーザーが、メール認証を「すでに済ませているか」をチェック
         if ($request->user()->hasVerifiedEmail()) {
-            // ① 認証済みなら、予定通り商品一覧画面（/）へ進む
-            return redirect('/');
+            // 認証済みなら、「/」または遷移しようとしていた画面へ遷移
+            return redirect()->intended(route('index', absolute: false));
         }
 
-        // ② まだ未認証なら、商品一覧へは行かせず、メール確認のお願い画面へ強制送還する！
+        // まだ未認証なら、メール確認のお願い画面へ強制送還する
         return redirect()->route('verification.notice');
     }
 
