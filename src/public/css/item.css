@@ -172,19 +172,22 @@
 /* ==========================================================================
    メルカリ風 SOLDリボン　　　サイズ調整
    ========================================================================== */
-.sold-badge {
+.sold-badge,
+.unsold-badge {
     width: 220px;
     /* 元は100px */
     height: 220px;
     /* 元は100px */
 }
 
-.sold-badge span {
+.sold-badge span,
+.unsold-badge span {
     bottom: 15px;
     /* 元は８px */
 }
 
-.sold-badge span {
+.sold-badge span,
+.unsold-badge span {
     font-size: 32px;
     /* 💡 16px から 32px に拡大 */
 }

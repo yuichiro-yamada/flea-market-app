@@ -6,7 +6,7 @@
     width: 100%;
     min-height: 100px;
     /* 💡 height: 100px から min-height に変更（画像が入ると縦に伸びる） */
-    margin: 5px 0 30px;
+    margin: 5px 0 5px;
     border: 1px dashed #696969;
     display: flex;
     align-items: center;
@@ -56,30 +56,22 @@
     border-radius: 4px;
 }
 
-
-
-
-
-
-
-
-
 .sell__section{
+    font-weight: bold;
     font-size: 20px;
     color: #696969;
     width: 100%;
     padding: 2px 0;
-    margin: 10px 0 15px;
+    margin: 20px 0 15px;
     border-bottom: #a9a9a9 solid 2px;
 }
 
 .sell__category--box{
-    margin: 5px 0 25px;
+    margin: 5px 0 10px;
     display: flex;      /* 子要素を横並びにする */
     flex-wrap: wrap;    /* 横幅がいっぱいになったら折り返す */
     gap: 10px 15px;          /* ボタン同士の上下左右の隙間（数値は自由） */
 }
-
 
 /* 1. チェックボックス本体は画面から隠す */
 .sell__category--checkbox-hidden {
@@ -130,14 +122,14 @@
     position: absolute;
     top: 50%;
     right: 5px;
-    transform: translateY(calc(-50% - 5px));
+    transform: translateY(calc(-50%));
     pointer-events: none;
 }
 
 .sell__select-box{
     width: 100%;
     height: 45px;
-    margin: 5px 0 20px;
+    margin: 5px 0 5px;
     padding: 0 30px 0 10px;
     border: 1px solid #696969;
     outline: none;
@@ -167,7 +159,7 @@
     position: absolute;
     left: 12px;
     top: 50%;
-    transform: translateY(calc(-50% - 8px));
+    transform: translateY(calc(-50%));
     font-weight: bold;
     /* 太文字に指定 */
     font-size: 18px;

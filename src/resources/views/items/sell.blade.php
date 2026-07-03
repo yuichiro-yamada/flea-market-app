@@ -12,7 +12,7 @@
     {{-- ⭕ 1. 画像一時保存専用のフォーム（画面には見えません） --}}
     <form id="imageUploadForm" action="{{ route('sell.upload') }}" method="POST" enctype="multipart/form-data" style="display: none;">
         @csrf
-        <input type="file" name="item_image" id="hiddenItemImage" onchange="document.getElementById('imageUploadForm').submit();">
+        <input type="file" id="hiddenItemImage" name="item_image" accept="image/*" style="display: none;" onchange="checkItemImageSize(this)">
     </form>
 
     {{-- ⭕ 2. 本番の出品保存専用のフォーム --}}
@@ -22,22 +22,32 @@
         <!-- 点線の枠エリア -->
         <div class="sell__photo--box">
             <div class="sell__photo--inner-container">
-                <!-- 画像を選択するボタン（クリックすると、上の隠しファイル選択が連動して動きます） -->
+                <!-- 画像を選択するボタン -->
                 <label style="cursor: pointer;" onclick="document.getElementById('hiddenItemImage').click();">
                     <div class="profile__picture--select">画像を選択する</div>
                 </label>
 
                 <!-- プレビュー画像表示 -->
-                @if(session('item_tmp_image_path'))
+                {{-- 💡 修正：コメントの開始と閉じを正しく修正しました --}}
+                @if(session('item_tmp_image_path') || old('item_tmp_image_path'))
+                    @php
+                        $tmpPath = session('item_tmp_image_path') ?? old('item_tmp_image_path');
+                        $tmpName = session('item_tmp_image_name') ?? old('item_tmp_image_name');
+                    @endphp
                     <div class="sell__photo--preview-area">
-                        <div class="file-info-display">
-                            選択中のファイル: <strong>{{ session('item_tmp_image_name') }}</strong>
-                        </div>
+                        @if($tmpName)
+                            <div class="file-info-display">
+                                {{-- 💡 修正：作成した変数 $tmpName を使うように変更 --}}
+                                選択中のファイル: <strong>{{ $tmpName }}</strong>
+                            </div>
+                        @endif
                         <div class="preview-image-container">
-                            <img src="/storage/{{ session('item_tmp_image_path') }}" class="common__picture--photo">
+                            {{-- 💡 修正：作成した変数 $tmpPath を使うように変更 --}}
+                            <img src="/storage/{{ $tmpPath }}" class="common__picture--photo">
                         </div>
-                        <!-- 変わった後の画像名を本番フォームに引き継ぐ隠し入力 -->
-                        <input type="hidden" name="item_tmp_image_path" value="{{ session('item_tmp_image_path') }}">
+                        <!-- エラーで戻ってきたときも、この隠し入力（old）で値を次の送信へ引き継ぐ -->
+                        <input type="hidden" name="item_tmp_image_path" value="{{ $tmpPath }}">
+                        <input type="hidden" name="item_tmp_image_name" value="{{ $tmpName }}">
                     </div>
                 @endif
             </div>
@@ -50,7 +60,7 @@
 
         <div class="sell__section">商品の詳細</div>
         
-        <div>カテゴリ</div>
+        <div class="common__subsection">カテゴリ</div>
         <div class="sell__category--box">
             @foreach($categories as $category)
                 <input type="checkbox" 
@@ -70,7 +80,7 @@
             @enderror
         </div>
 
-        <div>商品の状態</div>
+        <div class="common__subsection">商品の状態</div>
         <div class="sell__select-box--wrapper">
         <select class="sell__select-box" name="condition">
             <!-- 💡 初期状態として「選択してください」を用意し、エラー時も選択を保持できるようにします -->
@@ -91,7 +101,7 @@
 
         <div class="sell__section">商品と説明</div>
         
-        <div>商品名</div>
+        <div class="common__subsection">商品名</div>
         <input type="text" class="common__input-box" name="item_name" value="{{ old('item_name') }}">
         <div class="error-message">
             @error('item_name')
@@ -99,10 +109,10 @@
             @enderror
         </div>
 
-        <div>ブランド名</div>
+        <div class="common__subsection">ブランド名</div>
         <input type="text" class="common__input-box" name="brand_name" value="{{ old('brand_name') }}">
 
-        <div>商品の説明</div>
+        <div class="common__subsection">商品の説明</div>
         <textarea class="common__input-textbox" name="item_detail">{{ old('item_detail') }}</textarea>
         <div class="error-message">
             @error('item_detail')
@@ -110,7 +120,7 @@
             @enderror
         </div>
 
-        <div>販売価格</div>
+        <div class="common__subsection">販売価格</div>
         <div class="sell__input-box--wrapper">
             <input type="text" class="common__input-box" name="item_price" value="{{ old('item_price') }}">
         </div>
@@ -124,5 +134,28 @@
         <button type="submit" class="common__button">出品する</button>
     </form> 
 </div>
+
+<script>
+function checkItemImageSize(input) {
+    // 💡 .files[0] とすることで、選択された1番目のファイル本体を確実に取得します
+    const file = input.files[0];
+
+    if (file) {
+        const maxSize = 2 * 1024 * 1024; // 2MB
+
+        if (file.size > maxSize) {
+            // 2MBを超えていた場合はアラートを出し、選択をクリアして処理を中断
+            alert('画像サイズは2MB以内でアップロードしてください。');
+            input.value = ''; // ファイルの選択をリセット
+            return false;
+        }
+    }
+
+    // 💡 2MB以内であれば、フォームを自動送信してプレビューさせます
+    input.form.submit();
+}
+</script>
+
+
 @endsection
 

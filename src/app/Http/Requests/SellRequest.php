@@ -34,10 +34,10 @@ class SellRequest extends FormRequest
         'item_name' => ['required', 'string', 'max:255'],
 
         // 画像ファイル（最大2MBまで）
-        // ⭕ 修正：required_without を使い、一時保存パス（item_tmp_image_path）がない時だけ必須にする
+        // 一時保存パス（item_tmp_image_path）がない時だけ必須
         'item_image' => ['required_without:item_tmp_image_path', 'nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         
-        // ⭕ 追加：一時保存の画像パスが届く可能性もあるため、ルールを定義しておく
+        // 一時保存の画像パスが届く可能性もあるため、ルールを定義しておく
         'item_tmp_image_path' => ['nullable', 'string'],
 
         // ブランド

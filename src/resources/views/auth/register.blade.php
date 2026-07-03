@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
 @section('css')
   <link rel="stylesheet" href="{{ asset('css/login.css') }}" />
@@ -24,9 +24,9 @@
             @enderror
         </div>
         <div class="common__heading">パスワード</div>
-        <input type="text"  class="common__input-box" name="password">
+        <input type="password"  class="common__input-box" name="password">
         <div class="common__heading">確認用パスワード</div>
-        <input type="text"  class="common__input-box" name="password_confirmation">
+        <input type="password"  class="common__input-box" name="password_confirmation">
         <div class="error-message">
             @error('password')
             {{$message}}

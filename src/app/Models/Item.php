@@ -22,6 +22,7 @@ class Item extends Model
         'item_detail',
         'item_image',
         'item_price',
+        'buyer_id',
         'sales_status',
     ];
 

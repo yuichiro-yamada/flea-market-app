@@ -31,14 +31,17 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'member_name' => ['required', 'string', 'max:255'],
+            'member_name' => ['required', 'string', 'max:20'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ], [
             // ★ここに日本語のメッセージを追加します
             'member_name.required' => 'お名前を入力してください',
+            'member_name.max'      => 'お名前は20文字以内で入力してください',
             'email.required'       => 'メールアドレスを入力してください',
-            'email.email'          => '正しいメールアドレスの形式で入力してください',
+            'email.email'          => 'メールアドレスはメール形式で入力してください',
+            'email.unique'         => 'このメールアドレスはすでに登録されています',
+            'email.max'            => 'メールアドレスは255文字以内で入力してください',
             'password.required'    => 'パスワードを入力してください',
             'password.confirmed'   => 'パスワードと一致しません',
             'password.min'         => 'パスワードは8文字以上で入力してください',

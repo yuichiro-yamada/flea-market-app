@@ -9,70 +9,141 @@
 <div class="common__form">
     <h1>プロフィール設定</h1>
 
-    <!-- ★デバッグ用：現在のfrom_urlの状態を表示する -->
-    <div style="background-color: #f0f8ff; border: 1px solid #1e90ff; padding: 10px; margin: 10px 0; border-radius: 5px;">
-        <p style="margin: 0; font-size: 14px; color: #333;">
-            現在のセッション(from_url): <strong>{{ session('from_url') ?? '空っぽ（無し）' }}</strong>
-        </p>
-        <p style="margin: 5px 0 0 0; font-size: 14px; color: #333;">
-            現在のURLパラメータ(from_url): <strong>{{ request('from_url') ?? '空っぽ（無し）' }}</strong>
-        </p>
-    </div>
-
     <!-- ① actionを「/profile/update」に変更、② 画像送信用の enctype を追加、③ PATCHは削除（POSTで処理します） -->
     <form action="{{ route('profile.update.all') }}" method="POST" enctype="multipart/form-data" novalidate>
         @csrf
-        
         <div>
-            <label style="cursor: pointer;" class="profile__picture">
-                <!-- ★【変更】一時保存された画像があればそれを、なければ現在の画像（またはデフォルト）を表示 -->
-                <img src="{{ 
-                    session('tmp_image_path') && file_exists(public_path('storage/' . session('tmp_image_path')))
-                        ? '/storage/' . session('tmp_image_path') 
-                        : ($user->member_image && file_exists(public_path('storage/images/profile/' . $user->member_image))
-                            ? '/storage/images/profile/' . $user->member_image 
-                            : '/storage/images/profile/silver.png') 
-                }}" class="common__picture--photo">
-                <div>
-                    <div class="profile__picture--select">画像を選択する</div>
-                    <!-- 「画像を選択する」をクリックしてファイルを選ぶとこの部分が動く
-                    input type="file" でファイル選択ダイアログが開く
-                     ファイル選択しOKボタン押すとonchangeで中身が変化したことをブラウザが検知
-                     検知するとthis.form.submit()が実行され、画像をサーバに送って画面をリロードする
-                     処理はUserControllerのupdateAllメソッドのパターンAで行われる -->
-                    <input type="file" name="member_image" accept="image/*" style="display: none;" onchange=this.form.submit();>
-                    <!-- フォーム送信時に from_url を確実にサーバーへ送るための命綱 -->
-                    <input type="hidden" name="from_url" value="{{ session('from_url') ?? request('from_url') }}">
+            <div class="profile__picture">
+                <!-- 💡 上部エリア：一時保存パスを最優先で表示 -->
+                <div class="common__picture">
+                    @if(session()->has('tmp_image_path'))
+                        <img src="/storage/{{ session()->get('tmp_image_path') }}" class="common__picture--photo">
+                    @elseif(old('tmp_image_path'))
+                        <img src="/storage/{{ old('tmp_image_path') }}" class="common__picture--photo">
+                    @else
+                        <img src="{{ 
+                            $user->member_image && file_exists(public_path('storage/images/profile/' . $user->member_image))
+                                ? '/storage/images/profile/' . $user->member_image 
+                                : '/storage/images/profile/silver.png'
+                        }}" class="common__picture--photo">
+                    @endif
+                </div>
 
-                    <!-- 画像ファイル設定した場合のファイル名表示エリア -->
-                    @if(session('tmp_image_name'))
+                <div>
+                    {{-- 💡 登録されたfor属性だけで綺麗に連動させます --}}
+                    <label for="member_image" class="profile__picture--select" style="cursor: pointer;">画像を選択する</label>
+                    
+                    <!-- 
+                      【プロフィール画像選択・自動プレビューの仕組み】
+                      1. 「画像を選択する」をクリックすると、labelのfor属性によって下の input(type="file") が1回で連動して開く。
+                      2. ファイルを選択して決定すると、onchangeによって「checkAndSubmit()」関数が起動。
+                      3. JavaScript側で「2MBの容量制限」をチェックし、問題なければ「action」に「select_image」の値をセットした上で、フォームを自動送信（submit）する。
+                      4. 処理は UserController の updateAllメソッド（パターンA）で行われ、画像をtmpフォルダへ一時保存した後にセッション（またはold）にパスを持たせて画面を自動リロードする。
+                      5. 画面上部では、一時保存パスの有無を最優先で判定しているため、バリデーションエラー等で画面が戻ってきた（oldに入った）際にも選択した画像が消えずに維持される。
+                    -->
+
+                    <!-- 1. アクションの目印（JavaScriptが送信直前に動的に書き換えます。初期値は空で正解です） -->
+                    <input type="hidden" id="form_action" name="action" value="">
+
+                    <!-- 2. ファイル選択（ユーザーの操作用） -->
+                    <input type="file" id="member_image" name="member_image" accept="image/*" style="display: none;" onchange="checkAndSubmit(this)">
+
+                    <!-- 3. 元いたURL of 記憶 -->
+                    <input type="hidden" name="from_url" value="{{ session('from_url') ?? request('from_url') }}">        
+                    
+                    <div class="error-message">
+                        @error('member_image')
+                            <div style="color: red;">{{ $message }}</div>
+                        @enderror
+                    </div>
+                
+                    {{-- 💡 エラーで戻ってきた時（old）もファイル名と隠しパスをキープ --}}
+                    @if(session()->has('tmp_image_name'))
                         <div class="profile__file-info--display">
-                            選択中のファイル: <strong>{{ session('tmp_image_name') }}</strong>
-                            <input type="hidden" name="tmp_image_path" value="{{ session('tmp_image_path') }}">
+                            選択中のファイル: <strong>{{ session()->get('tmp_image_name') }}</strong>
+                            <input type="hidden" name="tmp_image_name" value="{{ session()->get('tmp_image_name') }}">
+                            <input type="hidden" name="tmp_image_path" value="{{ session()->get('tmp_image_path') }}">
+                        </div>
+                    @elseif(old('tmp_image_name'))
+                        <div class="profile__file-info--display">
+                            選択中のファイル: <strong>{{ old('tmp_image_name') }}</strong>
+                            <input type="hidden" name="tmp_image_name" value="{{ old('tmp_image_name') }}">
+                            <input type="hidden" name="tmp_image_path" value="{{ old('tmp_image_path') }}">
                         </div>
                     @endif
                 </div>
-            </label>
-            <!-- 自動リロードされた時に、コントローラ側に「画像選択の処理」だと伝えるための隠しタグ -->
-            <input type="hidden" name="action" value="select_image">
+            </div> 
         </div>
 
         <!-- ★【変更】value属性を「old()」に変更。これで画像選択時の自動リロードでも入力内容が消えません -->
-        <div class="common__">ユーザー名</div>
+        <div class="common__subsection">ユーザー名</div>
         <input type="text" class="common__input-box" name="member_name" value="{{ old('member_name', $user->member_name) }}">
+        <div class="error-message">
+            @error('member_name')
+            {{$message}}
+            @enderror
+        </div>
         
-        <div>郵便番号</div>
+        <div class="common__subsection">郵便番号</div>
         <input type="text" class="common__input-box" name="postcode" value="{{ old('postcode', $user->postcode) }}">
-        
-        <div>住所</div>
+        <div class="error-message">
+            @error('postcode')
+            {{$message}}
+            @enderror
+        </div>
+
+        <div class="common__subsection">住所</div>
         <input type="text" class="common__input-box" name="address" value="{{ old('address', $user->address) }}">
-        
-        <div>建物名</div>
+        <div class="error-message">
+            @error('address')
+            {{$message}}
+            @enderror
+        </div>
+
+        <div class="common__subsection">建物名</div>
         <input type="text" class="common__input-box" name="building" value="{{ old('building', $user->building) }}">
-        
+        <div class="error-message">
+            @error('building')
+            {{$message}}
+            @enderror
+        </div>
+
         <!-- ★【変更】一番下のボタンに「最終保存」だと判別するための name と value を追加 -->
         <button class="common__button" type="submit" name="action" value="save_all">更新する</button>
     </form>
 
 </div>
+
+<script>
+function checkAndSubmit(input) {
+    // 💡 1. 選択された1番目のファイル本体を確実に取得
+    const file = input.files[0];
+
+    if (file) {
+        const maxSize = 2 * 1024 * 1024; // 2MB
+
+        if (file.size > maxSize) {
+            alert('画像サイズは2MB以内でアップロードしてください。');
+            input.value = ''; // 2MBを超えていたら選択をクリア
+            return false;
+        }
+    } else {
+        // ファイルが選択されていない（キャンセルされた）場合は何もしない
+        return false;
+    }
+
+    // 💡 2. コントローラに「画像選択の処理」だと伝える目印をセット
+    document.getElementById('form_action').value = 'select_image';
+
+    // 💡 3. フォームの自動送信を実行
+    input.form.submit();
+    
+    // 💡 4. 送信完了直後に、input自体の選択を一度リセットする（選び直しのバグを防ぐ保険）
+    // これにより、ブラウザが「毎回新しく画像が選ばれた」と認識できるようになります
+    setTimeout(() => {
+        input.value = '';
+    }, 100);
+}
+</script>
+
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Item;
@@ -43,21 +44,21 @@ class UserController extends Controller
         $page = $request->query('page', 'sell'); // デフォルトは 'sell'
 
         if ($page === 'buy') {
-            $items = Item::whereHas('salesRecord', function($query) use ($myId) {
-                $query->where('buyer_id', $myId);
-            })->get();
+            $items = Item::where('buyer_id', $myId)->latest()->get();
         } else {
-            $items = Item::where('seller_id', $myId)->get();
+            $items = Item::where('seller_id', $myId)->latest()->get();
         }
 
         return view('auth.mypage', compact('items', 'user'));
     }
     // ② 統合更新メソッド（修正）
-    public function updateAll(Request $request){
+    public function updateAll(ProfileUpdateRequest $request){
         $user = Auth::user();
 
-        // パターンA：画像が選択されて自動リロードが入ったとき（変更なし）
+        // パターンA：画像が選択されて自動リロードが入ったとき
         if ($request->input('action') === 'select_image') {
+            $request->session()->forget('_old_input');
+
             $request->validate([
                 'member_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
@@ -67,17 +68,18 @@ class UserController extends Controller
                 $originalName = $file->getClientOriginalName();
                 $tmpPath = $file->store('tmp', 'public');
 
+                // 💡 さっき追加した session()->put('_old_input...') の2行は削除して、すっきりさせて大丈夫です
+
                 return redirect()->back()
-                    ->withInput() 
-                    // 元のURLをセッション（->with([...])：次の画面にのみ保持されるフラッシュデータ）に保持する
                     ->with([
                         'tmp_image_name' => $originalName,
                         'tmp_image_path' => $tmpPath,
                         'from_url' => $request->input('from_url')
                     ]);
             }
-            return redirect()->back()->withInput();
+            return redirect()->back();
         }
+
 
         // パターンB：一番下の「更新する」ボタンが押されたとき（リダイレクト先を修正）
         if ($request->input('action') === 'save_all') {
@@ -120,3 +122,4 @@ class UserController extends Controller
         }
     }
 }
+

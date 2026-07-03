@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('item_detail');
             $table->string('item_image',255);
             $table->unsignedInteger('item_price');
+            $table->foreignId('buyer_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->unsignedTinyInteger('sales_status');
             $table->timestamps();
         });

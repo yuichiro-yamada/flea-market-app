@@ -8,6 +8,8 @@ use App\Http\Controllers\SellController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\WebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +60,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // 💡 【追加】変更された住所を一時保存して購入画面に戻るルート
     Route::post('/purchase/address/{item_id}', [PurchaseController::class, 'updateAddress'])->name('address.update');
 
+    // Stripeによる決済
+    // 決済開始（POST）
+    Route::post('/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
+    // 決済成功・キャンセル（GET）
+    Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+
 });
 
 // Breeze（auth.php）の中に
@@ -65,31 +74,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // 表示・処理するためのURLとルートが用意さされている
 require __DIR__.'/auth.php';
 
-
-
-/*
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/login',[AuthController::class,'loginView'])->name('login');
-Route::get('/register',[AuthController::class,'create']);
-Route::post('/login',[AuthController::class,'login']);
-Route::post('/register',[AuthController::class,'store']);
-
-
-
-    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
-
-    Route::patch('/index', [UserController::class, 'update']);
-    Route::post('/profile/image', [UserController::class, 'updateImage'])->name('profile.image.update');
-
-    Route::get('/mypage',[UserController::class,'mypage'])->name('mypage');
-    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
-
-
-Route::get('/',[ItemController::class,'index']);
-Route::get('/profile',[UserController::class,'profile']);
-
-Route::get('/sell',[SellController::class,'sell']);
-Route::get('/item',[ItemController::class,'item']);
-Route::get('/purchase',[PurchaseController::class,'purchase']);
-Route::get('/purchase/address',[AddressController::class,'edit']);
-*/
+Route::post('/stripe/webhook', [WebhookController::class, 'handleStripeWebhook']);
+Route::post('/api/stripe/webhook', [WebhookController::class, 'handleStripeWebhook']);

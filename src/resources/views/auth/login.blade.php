@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
 @section('content')
 <div class="common__form">
@@ -13,7 +13,7 @@
             @enderror
         </div>
         <div class="common__heading">パスワード</div>
-        <input type="text"  class="common__input-box" name="password">
+        <input type="password"  class="common__input-box" name="password">
         <div class="error-message">
             @error('password')
             {{$message}}

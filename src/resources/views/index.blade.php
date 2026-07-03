@@ -22,7 +22,6 @@
             @endif
         </div>
     </div>
-    
     <div class="index__items--wrapper">
         @if(request()->filled('keyword'))
             <div class="index__search-keyword">
@@ -34,14 +33,16 @@
             @foreach($items as $item)
             <div class="index__items--box">
                 {{-- 💡 画像を囲むdivに、詳細画面と同じクラス「item__picture-container」を追加します --}}
-                <div class="index__items--picture item__picture-container">
-                    <img src="storage/images/items/{{ $item->item_image }}">
-                    
-                    {{-- 💡 sales_status が 3（売却済み）の場合にSOLDリボンを表示 --}}
-                    @if($item->sales_status == 3)
-                        <div class="sold-badge"><span>SOLD</span></div>
-                    @endif
-                </div>
+                <a href="{{ route('items.show', ['item' => $item->id]) }}">
+                    <div class="index__items--picture common__badge--position">
+                        <img src="storage/images/items/{{ $item->item_image }}">
+                        @if ($item->sales_status == 2 && ($item->seller_id == Auth::id() || $item->buyer_id == Auth::id()))
+                            <div class="unsold-badge"><span>UNSD</span></div>
+                        @elseif ($item->sales_status == 3 || ($item->sales_status == 2 && $item->seller_id != Auth::id() && $item->buyer_id != Auth::id()))
+                            <div class="sold-badge"><span>SOLD</span></div>
+                        @endif
+                    </div>
+                </a>
                 <div class="index__items--name">
                     <a href="{{ route('items.show', ['item' => $item->id]) }}">
                         {{ $item->item_name }}

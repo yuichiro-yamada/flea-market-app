@@ -45,16 +45,20 @@
             @foreach($items as $item)
             <div class="index__items--box">
                 {{-- 💡 親のdivに position: relative と overflow: hidden を直接インラインで強制指定します --}}
-                <div class="index__items--picture" style="position: relative !important; overflow: hidden !important; display: inline-block; width: 100%;">
-                    <img src="{{ asset('storage/images/items/' . $item->item_image) }}" style="width: 100%; display: block;">
-                    
-                    {{-- 💡 クラス名は元々の設計通り「sold-badge」にします --}}
-                    @if($item->sales_status == 3)
-                        <div class="sold-badge"><span>SOLD</span></div>
-                    @endif
-                </div>
+                <a href="{{ route('items.show', ['item' => $item->id]) }}">
+                    <div class="common__badge--position">
+                        <img src="{{ asset('storage/images/items/' . $item->item_image) }}" style="width: 100%; display: block;">
+                        @if ($item->sales_status == 2 && ($item->seller_id == Auth::id() || $item->buyer_id == Auth::id()))
+                            <div class="unsold-badge"><span>UNSD</span></div>
+                        @elseif ($item->sales_status == 3 || ($item->sales_status == 2 && $item->seller_id != Auth::id() && $item->buyer_id != Auth::id()))
+                            <div class="sold-badge"><span>SOLD</span></div>
+                        @endif
+                    </div>
+                </a>
                 <div class="index__items--name">
-                    {{ $item->item_name }}
+                    <a href="{{ route('items.show', ['item' => $item->id]) }}">
+                        {{ $item->item_name }}
+                    </a>
                 </div>
             </div>
             @endforeach

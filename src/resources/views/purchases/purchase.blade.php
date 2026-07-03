@@ -58,10 +58,15 @@
 
 
     {{-- 2. 購入確定用のフォーム（POST送信専用） --}}
-    <form action="{{ route('purchase.store', $item) }}" method="POST" class="purchase__summary">
+    <form action="{{ route('payment.checkout') }}" method="POST" class="purchase__summary">
         @csrf
         {{-- コントローラーでの購入確定時に必要な情報を隠しフィールドで保持 --}}
         <input type="hidden" name="payment_method" value="{{ $payment_method ?? Auth::user()->default_payment_method }}">
+
+        {{-- Stripeへ送信 --}}
+        <input type="hidden" name="product_name" value="{{ $item->item_name }}">
+        <input type="hidden" name="price" value="{{ $item->item_price }}">
+        <input type="hidden" name="item_id" value="{{ $item->id }}">
 
         <div class="purchase__summary">
             <div class="purchase__summary--wrap">
@@ -76,15 +81,30 @@
                         {{-- 💡 ユーザーのDB設定値、または選択中の値を表示 --}}
                         @if(($payment_method ?? Auth::user()->default_payment_method) == 1)
                             コンビニ支払い
+                            <input type="hidden" name="payment_method" value="konbini">
                         @else
                             クレジットカード支払い
+                            <input type="hidden" name="payment_method" value="card">
                         @endif
 
                     </div>
                 </div>
             </div>
-            {{-- 💡 「購入する」ボタンを submit タイプに変更。クリックすると本来のPOST処理に飛びます --}}
-            <button type="submit" class="common__button" style="width: 100%; border: none; cursor: pointer;">購入する</button>
+
+            {{-- 配送先住所の有無によるボタン表示制御 --}}
+            @if (empty($postcode) || empty($address))}
+                {{-- 配送先住所ない場合は非活性 --}}
+                <button type="button" class="common__button--disabled" disabled>購入する</button>
+                <div class="error-message">
+                    配送先住所を設定してください
+                </div>
+            @else
+                {{-- 配送先住所ある場合は活性 --}}
+                <button type="submit" class="common__button">
+                    購入する
+                </button>
+            @endif
+
         </div>
     </form>
 </div>

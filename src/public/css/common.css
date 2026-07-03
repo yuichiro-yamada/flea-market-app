@@ -106,12 +106,17 @@ h1 {
     border: 1px solid #696969;
 }
 
-.common__button {
+.common__subsection {
+    font-weight: bold;
+    margin: 13px 0 0;
+}
+
+.common__button,
+.common__button--disabled,
+.common__button--nopaid {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: red;
-    color: white;
     font-size: 18px;
     font-weight: bold;
     padding: 10px;
@@ -120,6 +125,23 @@ h1 {
     margin: 30px 0 15px;
     border: 2px;
     appearance: none;
+}
+
+.common__button{
+    background: red;
+    color: white;
+}
+
+.common__button--disabled {
+    background: #cccccc;
+    color: white;
+    cursor: not-allowed;
+}
+
+.common__button--nopaid {
+    background: yellow;
+    color: black;
+    cursor: not-allowed;
 }
 
 .common__picture--photo{
@@ -163,8 +185,9 @@ a{
 
 /* ==========================================================================
    メルカリ風 SOLDリボン
+   ★★★大きさは各ページのcssに記載
    ========================================================================== */
-.item__picture-container {
+.common__badge--position {
     position: relative;
     display: inline-block;
     overflow: hidden;
@@ -174,7 +197,6 @@ a{
     position: absolute;
     top: 0;
     left: 0;
-
     background-color: #ea352d;
     /* メルカリレッド */
     transform: translate(-50%, -50%) rotate(-45deg);
@@ -184,11 +206,31 @@ a{
 
 .sold-badge span {
     position: absolute;
-
     left: 0;
     width: 100%;
     text-align: center;
     color: #ffffff;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.unsold-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: yellow;
+    /* メルカリレッド */
+    transform: translate(-50%, -50%) rotate(-45deg);
+    transform-origin: 50% 50%;
+    z-index: 10;
+}
+
+.unsold-badge span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: black;
     font-weight: bold;
     letter-spacing: 1px;
 }

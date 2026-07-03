@@ -6,14 +6,16 @@
 
 @section('content')
 <div class="item__form">
-    <div class="item__picture-container" style="position: relative; display: inline-block; overflow: hidden;">
+    <div class="common__badge--position">
         <img src="/storage/images/items/{{ $item->item_image }}" class="item__picture--photo">
-        @if($item->sales_status == 3)
+        @if ($item->sales_status == 2 && ($item->seller_id == Auth::id() || $item->buyer_id == Auth::id()))
+            <div class="unsold-badge"><span>UNSD</span></div>
+        @elseif ($item->sales_status == 3 || ($item->sales_status == 2 && $item->seller_id != Auth::id() && $item->buyer_id != Auth::id()))
             <div class="sold-badge"><span>SOLD</span></div>
         @endif
     </div>
     <div class="item__content">
-        <h1>{{ $item->item_name }}</h1>
+        <h1>{{ $item->item_name }} </h1>
         <div class="item__content--brand">{{ $item->brand_name }}</div>
         <div class="item__content--price">
             <div class="item__content--price-unit">¥</div>
@@ -22,31 +24,25 @@
         </div>
         <div class="item__content--mark">
             <div class="item__content--mark-unit">
-                @auth
-                    {{-- 💡 ログインしている場合 --}}
-                    @if($item->favoritedByUsers->contains(Auth::id()))
-                        {{-- すでにいいねしている場合：クリックで「解除（DELETE）」 --}}
-                        <form action="{{ route('favorites.destroy', $item) }}" method="POST" style="display: inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
-                                <img src="/images/heart_pink.png" alt="いいね解除">
-                            </button>
-                        </form>
-                    @else
-                        {{-- まだいいねしていない場合：クリックで「登録（POST）」 --}}
-                        <form action="{{ route('favorites.store', $item) }}" method="POST" style="display: inline;">
-                            @csrf
-                            <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
-                                <img src="/images/heart_default.png" alt="いいね登録">
-                            </button>
-                        </form>
-                    @endif
+                {{-- 💡 ログインしている場合 --}}
+                @if($item->favoritedByUsers->contains(Auth::id()))
+                    {{-- すでにいいねしている場合：クリックで「解除（DELETE）」 --}}
+                    <form action="{{ route('favorites.destroy', $item) }}" method="POST" style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
+                            <img src="/images/heart_pink.png" alt="いいね解除">
+                        </button>
+                    </form>
                 @else
-                    {{-- 💡 ログインしていない場合：画像を表示するだけでクリック不可 --}}
-                    <img src="/images/heart_default.png" alt="いいね">
-                @endauth
-
+                    {{-- まだいいねしていない場合：クリックで「登録（POST）」 --}}
+                    <form action="{{ route('favorites.store', $item) }}" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
+                            <img src="/images/heart_default.png" alt="いいね登録">
+                        </button>
+                    </form>
+                @endif
                 {{-- いいねの総数を表示（loadCountを使うことで _count で取得できます） --}}
                 <div class="item__content--mark-count">
                     {{ $item->favoritedByUsers_count ?? $item->favoritedByUsers->count() }}
@@ -59,10 +55,26 @@
                 </div>
             </div>
         </div>
-        @if($item->sales_status == 3)
-            <button class="common__button" disabled style="background-color: #cccccc; cursor: not-allowed;">売り切れました</button>
+        @if($item->sales_status == 1)
+            <a href="{{ route('purchase.show', ['item_id' => $item->id]) }}" class="common__button">
+                購入手続きへ
+            </a>
+        @elseif ($item->sales_status == 2 && ($item->seller_id == Auth::id()))
+            <button class="common__button--nopaid">
+                購入されましたが入金はまだされていません
+            </button>
+        @elseif ($item->sales_status == 2 && ($item->buyer_id == Auth::id()))
+            <button class="common__button--nopaid">
+                コンビニエンスストアでの入金をお願いします
+            </button>
+        @elseif ($item->sales_status == 3 || ($item->sales_status == 2 && $item->seller_id != Auth::id() && $item->buyer_id != Auth::id()))
+            <button class="common__button--disabled" disabled>
+                売り切れました
+            </button>
         @else
-            <a href="{{ route('purchase.show', ['item_id' => $item->id]) }}" class="common__button">購入手続きへ</a>
+            <button class="common__button--disabled" disabled>
+                こちらの商品はご注文できません
+            </button>
         @endif
 
         <h2>商品説明</h2>

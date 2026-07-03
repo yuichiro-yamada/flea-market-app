@@ -19,8 +19,6 @@
     border-bottom: silver solid 2px;
 }
 
-
-
 .purchase__picture--photo {
     height: 150px;
     width: auto;
@@ -145,6 +143,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    flex: 1;
     padding: 20px 0;
+}
+
+.purchase__summary--title{
+    width: 40%;
+}
+
+.purchase__summary--content{
+    width: 60%;
 }

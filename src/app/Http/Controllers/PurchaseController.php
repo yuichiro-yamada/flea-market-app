@@ -24,11 +24,6 @@ class PurchaseController extends Controller
         $address = $user->shipping_address ?? $user->address;
         $building = $user->shipping_postcode ? $user->shipping_building : $user->building;
 
-        // ⭕ セッションを排除し、DBの配送先（shipping_*）か通常の登録住所かを綺麗に判定
-        $postcode = $user->shipping_postcode ?? $user->postcode;
-        $address  = $user->shipping_address  ?? $user->address;
-        $building = $user->shipping_building ?? $user->building;
-
         // ⭕ データベースの更新処理（update）を削除し、変数への代入だけに整理します
         if ($request->has('payment_method')) {
             // パラメーターがあればそれを画面に渡す
