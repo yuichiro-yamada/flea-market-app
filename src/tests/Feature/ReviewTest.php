@@ -14,7 +14,7 @@ class ReviewTest extends TestCase
     /**
      * 1. ログイン済みのユーザーはコメントを送信できる
      */
-    public function test_authenticated_user_can_send_comment()
+    public function test_1_ログイン済みのユーザーはコメントを送信できる(): void
     {
         $user = User::factory()->create();
         $item = Item::factory()->create(['sales_status' => 1]); // 販売中の商品
@@ -44,7 +44,7 @@ class ReviewTest extends TestCase
     /**
      * 2. ログイン前のユーザーはコメントを送信できない
      */
-    public function test_guest_user_cannot_send_comment()
+    public function test_2_ログイン前のユーザーはコメントを送信できない(): void
     {
         $item = Item::factory()->create(['sales_status' => 1]);
 
@@ -66,7 +66,7 @@ class ReviewTest extends TestCase
     /**
      * 3. コメントが入力されていない場合、バリデーションメッセージが表示される
      */
-    public function test_comment_is_required()
+    public function test_3_メントが入力されていない場合、バリデーションメッセージが表示される(): void
     {
         $user = User::factory()->create();
         $item = Item::factory()->create(['sales_status' => 1]);
@@ -87,7 +87,7 @@ class ReviewTest extends TestCase
     /**
      * 4. コメントが255字以上の場合、バリデーションメッセージが表示される
      */
-    public function test_comment_cannot_exceed_255_characters()
+    public function test_4_コメントが255字以上の場合、バリデーションメッセージが表示される(): void
     {
         $user = User::factory()->create();
         $item = Item::factory()->create(['sales_status' => 1]);

@@ -8,17 +8,8 @@
 @section('content')
 <div class="common__form">
     <h1>商品の出品</h1>
-
-    {{-- ⭕ 1. 画像一時保存専用のフォーム（画面には見えません） --}}
-    <form id="imageUploadForm" action="{{ route('sell.upload') }}" method="POST" enctype="multipart/form-data" style="display: none;">
+    <form id="sellForm" action="{{ route('sell.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <input type="file" id="hiddenItemImage" name="item_image" accept="image/*" style="display: none;" onchange="checkItemImageSize(this)">
-    </form>
-
-    {{-- ⭕ 2. 本番の出品保存専用のフォーム --}}
-    <form action="{{ route('sell.store') }}" method="POST">
-        @csrf
-
         <!-- 点線の枠エリア -->
         <div class="sell__photo--box">
             <div class="sell__photo--inner-container">
@@ -26,6 +17,8 @@
                 <label style="cursor: pointer;" onclick="document.getElementById('hiddenItemImage').click();">
                     <div class="profile__picture--select">画像を選択する</div>
                 </label>
+                <!-- 💡 画像専用のファイル入力欄をここに配置します（見た目は消したままでOKです） -->
+                <input type="file" id="hiddenItemImage" name="item_image" accept="image/*" style="display: none;" onchange="checkItemImageSize(this)">
 
                 <!-- プレビュー画像表示 -->
                 {{-- 💡 修正：コメントの開始と閉じを正しく修正しました --}}
@@ -102,7 +95,7 @@
         <div class="sell__section">商品と説明</div>
         
         <div class="common__subsection">商品名</div>
-        <input type="text" class="common__input-box" name="item_name" value="{{ old('item_name') }}">
+        <input type="text" class="common__input-box" name="item_name" value="{{ old('item_name', session('item_name')) }}">
         <div class="error-message">
             @error('item_name')
                 <div style="color: red;">{{ $message }}</div>
@@ -110,10 +103,15 @@
         </div>
 
         <div class="common__subsection">ブランド名</div>
-        <input type="text" class="common__input-box" name="brand_name" value="{{ old('brand_name') }}">
+        <input type="text" class="common__input-box" name="brand_name" value="{{ old('brand_name', session('brand_name')) }}">
+        <div class="error-message">
+            @error('brand_name')
+                <div style="color: red;">{{ $message }}</div>
+            @enderror
+        </div>
 
         <div class="common__subsection">商品の説明</div>
-        <textarea class="common__input-textbox" name="item_detail">{{ old('item_detail') }}</textarea>
+        <textarea class="common__input-textbox" name="item_detail">{{ old('item_detail', session('item_detail')) }}</textarea>
         <div class="error-message">
             @error('item_detail')
                 <div style="color: red;">{{ $message }}</div>
@@ -122,7 +120,7 @@
 
         <div class="common__subsection">販売価格</div>
         <div class="sell__input-box--wrapper">
-            <input type="text" class="common__input-box" name="item_price" value="{{ old('item_price') }}">
+            <input type="text" class="common__input-box" name="item_price" value="{{ old('item_price', session('item_price')) }}">
         </div>
         <div class="error-message">
             @error('item_price')
@@ -137,7 +135,6 @@
 
 <script>
 function checkItemImageSize(input) {
-    // 💡 .files[0] とすることで、選択された1番目のファイル本体を確実に取得します
     const file = input.files[0];
 
     if (file) {
@@ -151,11 +148,37 @@ function checkItemImageSize(input) {
         }
     }
 
-    // 💡 2MB以内であれば、フォームを自動送信してプレビューさせます
-    input.form.submit();
-}
-</script>
+    // 💡 ここから下を改良しました！
+    // 1. 画像が選択されたフォーム自体を掴む
+    const form = input.form;
 
+    // 2. 送信先（action）を、一時保存用のURL（/sell/upload）に一時的に書き換える
+    form.action = "{{ route('sell.upload') }}";
+
+    // 3. コントローラ側に「これは画像選択の自動リロードですよ」と伝えるための隠し入力を追加
+    const actionInput = document.createElement('input');
+    actionInput.type = 'hidden';
+    actionInput.name = 'action';
+    actionInput.value = 'select_image';
+    form.appendChild(actionInput);
+
+    // 4. 入力されたすべての文字と画像を持って、安全に送信する
+    form.submit();
+}
+
+// 💡 🌟 ここから下のコードを新しく追加してください！
+// 「出品する」ボタンを押したときは、送信先を必ず本来の「本番保存（/sell）」に戻す仕掛けです
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('sellForm');
+    if (form) {
+        form.addEventListener('submit', function() {
+            // 送信ボタンが押された瞬間、送信先を本来のストア処理のURLへ強制リセットします
+            form.action = "{{ route('sell.store') }}";
+        });
+    }
+});
+
+</script>
 
 @endsection
 

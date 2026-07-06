@@ -16,7 +16,7 @@ class SellTest extends TestCase
     /**
      * 1. 商品出品画面にて必要な情報が保存できること
      */
-    public function test_user_can_list_and_save_item_with_necessary_information()
+    public function test_1_品出品画面にて必要な情報が保存できること(): void
     {
         // 仮想ストレージの準備
         Storage::fake('public');

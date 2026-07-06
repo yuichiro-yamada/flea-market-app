@@ -35,10 +35,10 @@ class SellRequest extends FormRequest
 
         // 画像ファイル（最大2MBまで）
         // 一時保存パス（item_tmp_image_path）がない時だけ必須
-        'item_image' => ['required_without:item_tmp_image_path', 'nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+        'item_image' => 'required_without:item_tmp_image_path|image|mimes:jpeg,png,jpg,gif|max:2048',
         
         // 一時保存の画像パスが届く可能性もあるため、ルールを定義しておく
-        'item_tmp_image_path' => ['nullable', 'string'],
+        'item_tmp_image_path' => 'nullable|string',
 
         // ブランド
         'brand_name' => ['nullable','string', 'max:255'],
@@ -54,25 +54,27 @@ class SellRequest extends FormRequest
     public function messages(): array
     {
         return [
-            // カテゴリ
-            'category_ids.required' => 'カテゴリーを1つ以上選択してください',
-
-            'condition.required' => '商品の状態を選択してください',
-
-            // 商品名
-            'item_name.required'    => '商品名を入力してください',
-            'item_name.string'      => '商品名は文字列で入力してください',
-            'item_name.max'         => '商品名は255文字以内で入力してください',
-
             // 商品画像
-            'item_image.required_without' => '商品画像をアップロードしてください', // ⭕ required からこれに変更
+            'item_image.required_without' => '商品画像をアップロードしてください', // 画像の一時保存だけではチェックが走らない
             'item_image.image'            => '指定されたファイルは画像ではありません',
             'item_image.mimes'            => '画像はjpeg、png、jpg形式のみ対応しています',
             'item_image.max'              => '画像サイズは2MB以内でアップロードしてください',
 
+            // カテゴリ
+            'category_ids.required' => 'カテゴリーを1つ以上選択してください',
+
+            // 商品の状態
+            'condition.required' => '商品の状態を選択してください',
+
+            // 商品名
+            'item_name.required'    => '商品名を入力してください',
+            'item_name.max'         => '商品名は255文字以内で入力してください',
+
+            // ブランド名
+            'brand_name.max'         => 'ブランド名は255文字以内で入力してください',
+
             // 商品の説明
             'item_detail.required'  => '商品の説明を入力してください',
-            'item_detail.string'    => '商品の説明は文字列で入力してください',
             'item_detail.max'       => '商品の説明は1000文字以内で入力してください',
 
             // 販売価格

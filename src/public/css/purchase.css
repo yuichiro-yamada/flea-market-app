@@ -1,18 +1,25 @@
-
+/* ==========================================================================
+   1. 購入手続き：全体レイアウト
+   ========================================================================== */
 .purchase__form {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin: 0 auto;
     padding: 50px 0 0;
-    max-width: 1100px;;
+    max-width: 1100px;
+    ;
 }
 
 .purchase__form--main {
     width: 600px;
 }
 
-.purchase__content{
+
+/* ==========================================================================
+   2. 購入手続き：商品情報エリア
+   ========================================================================== */
+.purchase__content {
     display: flex;
     justify-content: flex-start;
     padding: 0 0 30px;
@@ -27,15 +34,16 @@
     /* 画像が歪んだり潰れたりするのを防ぐ */
 }
 
-.purchase__content--info{
+.purchase__content--info {
     margin: 0 0 0 20px;
 }
 
-.purchase__form h1{
+.purchase__form h1 {
     font-size: 26px;
     margin: 0;
 }
 
+/* 価格表示 */
 .purchase__content--price {
     display: flex;
     justify-content: flex-start;
@@ -45,7 +53,7 @@
 
 .purchase__content--price-unit {
     font-size: 20px;
-    margin: 0 5px 0 0 ;
+    margin: 0 5px 0 0;
 }
 
 .purchase__content--price-tag {
@@ -53,17 +61,22 @@
     margin: 0 2px;
 }
 
-.purchase__payment{
+
+/* ==========================================================================
+   3. 購入手続き：支払い方法エリア
+   ========================================================================== */
+.purchase__payment {
     padding: 15px;
     border-bottom: silver solid 2px;
 }
 
-.purchase__payment--title{
+.purchase__payment--title {
     font-size: 16px;
     font-weight: bold;
     margin: 0 0 20px;
 }
 
+/* セレクトボックス（カスタム矢印） */
 .purchase__select-box--wrapper {
     position: relative;
     width: 300px;
@@ -98,12 +111,16 @@
     -webkit-appearance: none;
 }
 
+
+/* ==========================================================================
+   4. 購入手続き：配送先エリア
+   ========================================================================== */
 .purchase__delivery {
     padding: 15px;
     border-bottom: silver solid 2px;
 }
 
-.purchase__delivery--wrap{
+.purchase__delivery--wrap {
     display: flex;
     justify-content: space-between;
     margin: 0 0 20px;
@@ -114,21 +131,25 @@
     font-weight: bold;
 }
 
-.purchase__delivery--address{
+.purchase__delivery--address {
     font-size: 14px;
     font-weight: bold;
     margin: 0 0 0 40px;
 }
 
-.purchase__summary{
+
+/* ==========================================================================
+   5. 購入手続き：注文サマリー（右側サイドバーなど）
+   ========================================================================== */
+.purchase__summary {
     width: 400px;
 }
 
-.purchase__summary--wrap{
+.purchase__summary--wrap {
     border: silver solid 2px;
 }
 
-.purchase__summary--item{
+.purchase__summary--item {
     display: flex;
     justify-content: space-between;
 }
@@ -139,17 +160,17 @@
 }
 
 .purchase__summary--title,
-.purchase__summary--content{
+.purchase__summary--content {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px 0;
 }
 
-.purchase__summary--title{
+.purchase__summary--title {
     width: 40%;
 }
 
-.purchase__summary--content{
+.purchase__summary--content {
     width: 60%;
 }

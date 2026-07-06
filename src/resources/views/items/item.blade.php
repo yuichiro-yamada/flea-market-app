@@ -49,16 +49,24 @@
                 </div>
             </div>
             <div class="item__content--mark-unit">
-                <img src="/images/baloon.png">
+                <a href="#anchor__comment">
+                    <img src="/images/baloon.png">
+                </a>
                 <div class="item__content--mark-count">
                     {{ $item->reviews_count ?? $item->reviews->count() }}
                 </div>
             </div>
         </div>
         @if($item->sales_status == 1)
-            <a href="{{ route('purchase.show', ['item_id' => $item->id]) }}" class="common__button">
-                購入手続きへ
-            </a>
+            @if($item->seller_id != Auth::id()) )
+                <a href="{{ route('purchase.show', ['item_id' => $item->id]) }}" class="common__button">
+                    購入手続きへ
+                </a>
+            @else
+                <button class="common__button--disabled" disabled>
+                    出品者ご本人のためご注文できません
+                </button>
+            @endif
         @elseif ($item->sales_status == 2 && ($item->seller_id == Auth::id()))
             <button class="common__button--nopaid">
                 購入されましたが入金はまだされていません
@@ -93,7 +101,7 @@
             <div class="item__info--content">{{ $item->condition_text }}</div>
         </div>
         {{-- 💡 1. タイトルとコメント数の表示 --}}
-        <h2>コメント ({{ $item->reviews_count }})</h2>
+        <h2  id="anchor__comment">コメント ({{ $item->reviews_count }})</h2>
 
         {{-- 💡 2. コメント一覧の表示（すべてループして出力） --}}
         <div class="item__comment-list">
@@ -117,34 +125,32 @@
         {{-- 💡 3. コメント入力エリア（ログインユーザーのみに表示） --}}
         {{-- 💡 【修正】コメント入力エリア（ログインかつ未売却時のみ表示） --}}
         @auth
-            @if($item->sales_status == 3)
-                {{-- 💡 売り切れ時はコメント入力フォーム自体を非表示にします --}}
-            @else
-                <div>商品へのコメント</div>
-                <form action="{{ route('comments.store', $item) }}" class="item__content--comment-form" method="POST" novalidate>
-                    @csrf
-                    <textarea name="comment" class="common__input-textbox" required placeholder="コメントを入力してください"></textarea>
-                    @error('comment')
-                        <div style="color: red;">{{ $message }}</div>
-                    @enderror
-                    <button type="submit" class="common__button">コメントを送信する</button>
-                </form>
-            @endif
+            <div>商品へのコメント</div>
+            <form action="{{ route('comments.store', $item) }}" class="item__content--comment-form" method="POST" novalidate>
+                @csrf
+                <textarea name="comment" class="common__input-textbox" required placeholder="コメントを入力してください"></textarea>
+                @error('comment')
+                    <div style="color: red;">{{ $message }}</div>
+                @enderror
+                <button type="submit" class="common__button">コメントを送信する</button>
+            </form>
         @else
             @if($item->sales_status != 3)
-                <p style="color: #666; margin-top: 20px;">※コメントを投稿するには<a href="{{ route('login') }}">ログイン</a>が必要です。</p>
+                <a href="{{ route('login', ['url' => url()->current()]) }}" class="common__button--uncertified">
+                    ログインしてコメントする
+                </a>
             @endif
         @endauth
     </div>
 </div>
 
-{{-- 購入済み商品の場合のみ表示されるモーダル --}}
-@if(session('purchase_error'))
+{{-- コメント投稿時・商品購入画面で購入済み商品を表示しようとした時に表示するモーダル --}}
+@if(session('modal_message'))
 <div class="modal-wrapper">
     <input type="checkbox" id="modal-trigger" checked style="display: none;">
     <div class="modal-overlay">
         <div class="modal-content">
-            <p class="modal-text">この商品は売り切れ、または、購入できません</p>
+            <p class="modal-text">{{ session('modal_message') }}</p>
             <label for="modal-trigger" class="common__button modal-close-btn">閉じる</label>
         </div>
     </div>

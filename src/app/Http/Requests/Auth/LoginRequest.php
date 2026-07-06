@@ -36,6 +36,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'email.required' => "メールアドレスを入力してください",
+            'email.email' => "メールアドレスはメール形式で入力してください",
             'password.required' => "パスワードを入力してください"
         ];
     }
@@ -53,7 +54,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => 'ログイン情報が登録されていません。', 
+                'email' => 'ログイン情報が登録されていません', 
             ]);
         }
 

@@ -8,10 +8,11 @@ use App\Models\User;
 use App\Models\Item;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    // ① プロフィール画面を表示するメソッド（修正）
+    // ① プロフィール修正画面を表示する
     public function profile(){
         $user = Auth::user();
 
@@ -37,6 +38,7 @@ class UserController extends Controller
         return view('auth.profile', compact('user'));
     }
 
+    // マイページを表示する
     public function mypage(Request $request)
     {
         $user = Auth::user();   // ログインユーザー情報の取得
@@ -51,7 +53,7 @@ class UserController extends Controller
 
         return view('auth.mypage', compact('items', 'user'));
     }
-    // ② 統合更新メソッド（修正）
+    // プロフィール修正画面からデータを更新する
     public function updateAll(ProfileUpdateRequest $request){
         $user = Auth::user();
 
@@ -59,22 +61,39 @@ class UserController extends Controller
         if ($request->input('action') === 'select_image') {
             $request->session()->forget('_old_input');
 
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'member_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
+            // チェックに失敗した場合の処理
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator) // エラーメッセージを画面に送る
+                    ->with([
+                        // エラーになっても、入力中だった名前や住所をしっかり画面に送り返す！
+                        'from_url'    => $request->input('from_url'),
+                        'member_name' => $request->member_name,
+                        'postcode'    => $request->postcode,
+                        'address'     => $request->address,
+                        'building'    => $request->building,
+                    ]);
+            }
+
+            //チェックに合格した場合の処理
             if ($request->hasFile('member_image')) {
                 $file = $request->file('member_image');
                 $originalName = $file->getClientOriginalName();
                 $tmpPath = $file->store('tmp', 'public');
 
-                // 💡 さっき追加した session()->put('_old_input...') の2行は削除して、すっきりさせて大丈夫です
-
                 return redirect()->back()
                     ->with([
                         'tmp_image_name' => $originalName,
                         'tmp_image_path' => $tmpPath,
-                        'from_url' => $request->input('from_url')
+                        'from_url'       => $request->input('from_url'),
+                        'member_name'    => $request->member_name,
+                        'postcode'       => $request->postcode,
+                        'address'        => $request->address,
+                        'building'       => $request->building,
                     ]);
             }
             return redirect()->back();
@@ -115,9 +134,9 @@ class UserController extends Controller
 
             // URLに「/register」または「/verify-email」が含まれているかどうかで判定
             if (str_contains($fromUrl, 'register') || str_contains($fromUrl, 'verify-email')) {
-                return redirect()->route('index')->with('success', 'プロフィールを更新しました！');
+                return redirect()->route('index')->with('modal_message', 'プロフィールを更新しました！');
             } else {
-                return redirect()->route('mypage')->with('success', 'プロフィールを更新しました！');
+                return redirect()->route('mypage')->with('modal_message', 'プロフィールを更新しました！');
             }
         }
     }

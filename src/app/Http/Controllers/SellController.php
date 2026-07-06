@@ -34,7 +34,14 @@ class SellController extends Controller
                 ->withInput() 
                 ->with([
                     'item_tmp_image_name' => $originalName,
-                    'item_tmp_image_path' => $tmpPath
+                    'item_tmp_image_path' => $tmpPath,
+                    'item_name'   => $request->item_name,
+                    'seller_id'   => Auth::id(),
+                    'condition'   => $request->condition,
+                    'brand_name'  => $request->brand_name,
+                    'item_detail' => $request->item_detail,
+                    'item_price'  => $request->item_price,
+                    'sales_status' => 1,
                 ]);
         }
         return redirect()->back()->withInput();
@@ -91,6 +98,6 @@ class SellController extends Controller
             $item->categories()->attach($request->input('category_ids'));
         }
 
-        return redirect()->route('mypage')->with('success', '商品を出品しました！');
+        return redirect()->route('mypage')->with('modal_message', "{$item->item_name}\nを出品しました！");
     }
 }

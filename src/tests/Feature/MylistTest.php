@@ -14,7 +14,7 @@ class MylistTest extends TestCase
     /**
      * 1. いいねした商品だけが表示される
      */
-    public function test_only_liked_items_are_displayed_on_mylist()
+    public function test_1_いいねした商品だけが表示される(): void
     {
         // ログインユーザーと、いいねする商品・しない商品を作成
         $user = User::factory()->create();
@@ -39,7 +39,7 @@ class MylistTest extends TestCase
     /**
      * 2. 購入済み商品は「SOLD」と表示される
      */
-    public function test_sold_out_items_in_mylist_display_sold_label()
+    public function test_2_購入済み商品は「SOLD」と表示される(): void
     {
         $user = User::factory()->create();
         
@@ -61,7 +61,7 @@ class MylistTest extends TestCase
     /**
      * 3. 未認証の場合は何も表示されない
      */
-    public function test_nothing_is_displayed_on_mylist_when_guest()
+    public function test_3_未認証の場合は何も表示されない(): void
     {
         // 商品がデータベースに存在している状態
         $item = Item::factory()->create(['item_name' => 'ある商品']);

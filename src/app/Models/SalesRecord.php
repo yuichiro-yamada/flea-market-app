@@ -23,21 +23,21 @@ class SalesRecord extends Model
         'shipping_building',
     ];
 
-    // 出品者
+    // 出品者とusersテーブル（多対１）
     public function seller(): BelongsTo
     {
         return $this->belongsTo(User::class, 'seller_id');
     }
 
-    // 購入者
+    // 購入者とusersテーブル（多対１）
     public function buyer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'buyer_id');
     }
 
     // 購入された商品
-    public function item(): BelongsTo
+    public function item(): HasOne
     {
-        return $this->belongsTo(Item::class);
+        return $this->hasOne(Item::class);
     }
 }

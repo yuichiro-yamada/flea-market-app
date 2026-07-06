@@ -38,6 +38,10 @@ class AuthenticatedSessionController extends Controller
 
         // ログインしたユーザーが、メール認証を「すでに済ませているか」をチェック
         if ($request->user()->hasVerifiedEmail()) {
+            // もし引き継がれた「url」があれば、そこへ最優先で戻す
+            if ($request->filled('url')) {
+                return redirect($request->input('url'));
+            }
             // 認証済みなら、「/」または遷移しようとしていた画面へ遷移
             return redirect()->intended(route('index', absolute: false));
         }

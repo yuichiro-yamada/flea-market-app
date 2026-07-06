@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FavoriteItem extends Model
@@ -23,7 +22,7 @@ class FavoriteItem extends Model
         return $this->belongsTo(User::class);
     }
 
-    // お気に入りされた商品
+    // お気に入りした商品
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class);

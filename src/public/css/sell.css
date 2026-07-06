@@ -1,4 +1,21 @@
-/* 【修正】既存の指定をこのように変更してください */
+/* ==========================================================================
+   1. 出品画面：セクション（見出し）
+   ========================================================================== */
+.sell__section {
+    font-weight: bold;
+    font-size: 20px;
+    color: #696969;
+    width: 100%;
+    padding: 2px 0;
+    margin: 20px 0 15px;
+    border-bottom: #a9a9a9 solid 2px;
+}
+
+
+/* ==========================================================================
+   2. 出品画面：写真アップロード ＆ プレビューエリア
+   ========================================================================== */
+/* 写真アップロード枠 */
 .sell__photo--box {
     background: #fff;
     padding: 20px 10px;
@@ -13,7 +30,7 @@
     justify-content: center;
 }
 
-/* 【追記】中の要素をすべて縦に並べて左右中央揃えにする */
+/* アップロード枠の内部コンテナ */
 .sell__photo--inner-container {
     display: flex;
     flex-direction: column;
@@ -26,7 +43,7 @@
     /* ボタンとプレビューエリアの間隔 */
 }
 
-/* プレビューエリア全体の縦並びと中央揃え */
+/* 画像プレビュー表示エリア */
 .sell__photo--preview-area {
     display: flex;
     flex-direction: column;
@@ -37,7 +54,7 @@
     width: 100%;
 }
 
-/* ファイル名のスタイル */
+/* 選択されたファイル名のテキスト */
 .file-info-display {
     font-size: 14px;
     color: #555;
@@ -45,7 +62,7 @@
     /* 文字列も中央揃え */
 }
 
-/* プレビュー画像のサイズ制御 */
+/* プレビュー画像本体 */
 .preview-image-container img {
     max-width: 100%;
     /* 枠からはみ出さないように縮小 */
@@ -56,21 +73,19 @@
     border-radius: 4px;
 }
 
-.sell__section{
-    font-weight: bold;
-    font-size: 20px;
-    color: #696969;
-    width: 100%;
-    padding: 2px 0;
-    margin: 20px 0 15px;
-    border-bottom: #a9a9a9 solid 2px;
-}
 
-.sell__category--box{
+/* ==========================================================================
+   3. 出品画面：カテゴリ選択（チェックボックス型ボタン）
+   ========================================================================== */
+/* カテゴリボタンの並び（親要素） */
+.sell__category--box {
     margin: 5px 0 10px;
-    display: flex;      /* 子要素を横並びにする */
-    flex-wrap: wrap;    /* 横幅がいっぱいになったら折り返す */
-    gap: 10px 15px;          /* ボタン同士の上下左右の隙間（数値は自由） */
+    display: flex;
+    /* 子要素を横並びにする */
+    flex-wrap: wrap;
+    /* 横幅がいっぱいになったら折り返す */
+    gap: 10px 15px;
+    /* ボタン同士の上下左右の隙間（数値は自由） */
 }
 
 /* 1. チェックボックス本体は画面から隠す */
@@ -107,12 +122,18 @@
     color: white;
 }
 
-.sell__select-box--wrapper{
+
+/* ==========================================================================
+   4. 出品画面：セレクトボックス（カスタム矢印）
+   ========================================================================== */
+/* セレクトボックスの外枠（下矢印用の疑似要素の起点） */
+.sell__select-box--wrapper {
     position: relative;
     width: 100%;
 }
 
-.sell__select-box--wrapper::after{
+/* 疑似要素によるカスタムの下矢印アイコン */
+.sell__select-box--wrapper::after {
     content: "";
     width: 0;
     height: 0;
@@ -126,7 +147,8 @@
     pointer-events: none;
 }
 
-.sell__select-box{
+/* セレクトボックス本体（デフォルト矢印は非表示） */
+.sell__select-box {
     width: 100%;
     height: 45px;
     margin: 5px 0 5px;
@@ -140,17 +162,27 @@
     -webkit-appearance: none;
 }
 
-.sell__input-textbox{
+
+/* ==========================================================================
+   5. 出品画面：商品説明（テキストエリア）
+   ========================================================================== */
+.sell__input-textbox {
     width: 100%;
     height: 100px;
     background: #fff;
     padding: 10px;
 }
 
-.sell__input-box--wrapper{
+
+/* ==========================================================================
+   6. 出品画面：価格入力エリア
+   ========================================================================== */
+/* 価格入力欄の外枠（「¥」マーク用の疑似要素の起点） */
+.sell__input-box--wrapper {
     position: relative;
     display: inline-block;
-    width: 100%;絵ぃt
+    width: 100%;
+    絵ぃt
 }
 
 /* 擬似要素：￥マークを太字で配置 */
@@ -166,7 +198,8 @@
     color: #333;
 }
 
-.sell__input-box--wrapper input{
+/* 外枠の内部にあるインプット要素 */
+.sell__input-box--wrapper input {
     width: 100%;
     padding: 10px 10px 10px 30px;
     /* 左側の余白を30pxに広げる */
@@ -186,4 +219,3 @@
     border-radius: 4px;
     box-sizing: border-box;
 }
-

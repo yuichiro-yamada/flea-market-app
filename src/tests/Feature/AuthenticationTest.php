@@ -14,7 +14,7 @@ class AuthenticationTest extends TestCase
     /**
      * 1. メールアドレスが入力されていない場合、バリデーションメッセージが表示される
      */
-    public function test_email_is_required_for_login()
+    public function test_1_メールアドレスが入力されていない場合、バリデーションメッセージが表示される(): void
     {
         // ログイン画面を開く
         $response = $this->get('/login');
@@ -37,7 +37,7 @@ class AuthenticationTest extends TestCase
     /**
      * 2. パスワードが入力されていない場合、バリデーションメッセージが表示される
      */
-    public function test_password_is_required_for_login()
+    public function test_2_パスワードが入力されていない場合、バリデーションメッセージが表示される(): void
     {
         // パスワードを空にしてPOST送信
         $response = $this->post('/login', [
@@ -56,7 +56,7 @@ class AuthenticationTest extends TestCase
     /**
      * 3. 入力情報が間違っている場合、バリデーションメッセージが表示される
      */
-    public function test_invalid_credentials_display_error_message()
+    public function test_3_入力情報が間違っている場合、バリデーションメッセージが表示される(): void
     {
         // 登録されていない情報をPOST送信
         $response = $this->post('/login', [
@@ -75,7 +75,7 @@ class AuthenticationTest extends TestCase
     /**
      * 4. 正しい情報が入力された場合、ログイン処理が実行される
      */
-    public function test_valid_credentials_can_login()
+    public function test_4_正しい情報が入力された場合、ログイン処理が実行される(): void
     {
         // テスト用のユーザーを作成
         $user = User::factory()->create([
@@ -99,7 +99,7 @@ class AuthenticationTest extends TestCase
     /**
      * 5. ログアウトができる
      */
-    public function test_user_can_logout()
+    public function test_5_ログアウトができる(): void
     {
         // テスト用のユーザーを作成してログイン状態にする
         $user = User::factory()->create();

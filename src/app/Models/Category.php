@@ -12,7 +12,7 @@ class Category extends Model
         'category_name',
     ];
 
-    // カテゴリに属する商品一覧（多対多）
+    // カテゴリとitem_categoriesテーブルとitemsテーブル（多対多）
     public function items(): BelongsToMany
     {
         return $this->belongsToMany(Item::class, 'item_categories', 'category_id', 'item_id')

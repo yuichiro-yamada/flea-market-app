@@ -12,9 +12,9 @@ class FavoriteTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * 1. いいねアイコンを押下することによって、いいねした商品として登録することができる。
+     * 1. いいねアイコンを押下することによって、いいねした商品として登録することができる
      */
-    public function test_user_can_like_an_item_and_count_increases()
+    public function test_1_いいねアイコンを押下することによって、いいねした商品として登録することができる(): void
     {
         $user = User::factory()->create();
         $item = Item::factory()->create();
@@ -41,7 +41,7 @@ class FavoriteTest extends TestCase
     /**
      * 2. 追加済みのアイコンは色が変化する
      */
-    public function test_like_icon_changes_color_when_liked()
+    public function test_2_追加済みのアイコンは色が変化する(): void
     {
         $user = User::factory()->create();
         $item = Item::factory()->create();
@@ -63,9 +63,9 @@ class FavoriteTest extends TestCase
     }
 
     /**
-     * 3. 再度いいねアイコンを押下することによって、いいねを解除することができる。
+     * 3. 再度いいねアイコンを押下することによって、いいねを解除することができる
      */
-    public function test_user_can_unlike_an_item_and_count_decreases()
+    public function test_3_再度いいねアイコンを押下することによって、いいねを解除することができる(): void
     {
         $user = User::factory()->create();
         $item = Item::factory()->create();

@@ -8,7 +8,6 @@
 @section('content')
 <div class="common__form">
     <h1>プロフィール設定</h1>
-
     <!-- ① actionを「/profile/update」に変更、② 画像送信用の enctype を追加、③ PATCHは削除（POSTで処理します） -->
     <form action="{{ route('profile.update.all') }}" method="POST" enctype="multipart/form-data" novalidate>
         @csrf
@@ -77,7 +76,7 @@
 
         <!-- ★【変更】value属性を「old()」に変更。これで画像選択時の自動リロードでも入力内容が消えません -->
         <div class="common__subsection">ユーザー名</div>
-        <input type="text" class="common__input-box" name="member_name" value="{{ old('member_name', $user->member_name) }}">
+        <input type="text" class="common__input-box" name="member_name" value="{{ old('member_name', session('member_name', $user->member_name)) }}">
         <div class="error-message">
             @error('member_name')
             {{$message}}
@@ -85,7 +84,7 @@
         </div>
         
         <div class="common__subsection">郵便番号</div>
-        <input type="text" class="common__input-box" name="postcode" value="{{ old('postcode', $user->postcode) }}">
+        <input type="text" class="common__input-box" name="postcode" value="{{ old('postcode', session('postcode', $user->postcode)) }}">
         <div class="error-message">
             @error('postcode')
             {{$message}}
@@ -93,7 +92,7 @@
         </div>
 
         <div class="common__subsection">住所</div>
-        <input type="text" class="common__input-box" name="address" value="{{ old('address', $user->address) }}">
+        <input type="text" class="common__input-box" name="address" value="{{ old('address', session('address', $user->address)) }}">
         <div class="error-message">
             @error('address')
             {{$message}}
@@ -101,7 +100,7 @@
         </div>
 
         <div class="common__subsection">建物名</div>
-        <input type="text" class="common__input-box" name="building" value="{{ old('building', $user->building) }}">
+        <input type="text" class="common__input-box" name="building" value="{{ old('building', session('building', $user->building)) }}">
         <div class="error-message">
             @error('building')
             {{$message}}

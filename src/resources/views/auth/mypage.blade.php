@@ -46,7 +46,7 @@
             <div class="index__items--box">
                 {{-- 💡 親のdivに position: relative と overflow: hidden を直接インラインで強制指定します --}}
                 <a href="{{ route('items.show', ['item' => $item->id]) }}">
-                    <div class="common__badge--position">
+                    <div class="index__items--picture common__badge--position">
                         <img src="{{ asset('storage/images/items/' . $item->item_image) }}" style="width: 100%; display: block;">
                         @if ($item->sales_status == 2 && ($item->seller_id == Auth::id() || $item->buyer_id == Auth::id()))
                             <div class="unsold-badge"><span>UNSD</span></div>
@@ -66,17 +66,17 @@
     </div>
 </div>
 
-{{-- 購入完了時のみ表示されるモーダル --}}
-@if(session('purchase_completed'))
+{{-- プロフィール修正・購入完了時・出品完了時に表示されるモーダル --}}
+@if(session('modal_message'))
 <div class="modal-wrapper">
     <input type="checkbox" id="modal-trigger" checked style="display: none;">
     <div class="modal-overlay">
         <div class="modal-content">
-            <p class="modal-text">購入が完了しました</p>
+            <p class="modal-text">{{ session('modal_message') }}</p>
             <label for="modal-trigger" class="common__button modal-close-btn">閉じる</label>
         </div>
     </div>
 </div>
 @endif
-
+<
 @endsection

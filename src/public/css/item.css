@@ -1,5 +1,7 @@
-
-.item__form{
+/* ==========================================================================
+   1. 商品詳細：全体レイアウト
+   ========================================================================== */
+.item__form {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -8,52 +10,58 @@
     max-width: 1100px;
 }
 
-.item__picture--photo{
+.item__picture--photo {
     width: 520px;
-    height: auto;           /* 高さを自動計算にして縦横比を維持する */
-    object-fit: contain;    /* 画像が歪んだり潰れたりするのを防ぐ */
+    height: auto;
+    /* 高さを自動計算にして縦横比を維持する */
+    object-fit: contain;
+    /* 画像が歪んだり潰れたりするのを防ぐ */
 }
 
-.item__content{
+.item__content {
     width: 520px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
-.item__content h1{
+.item__content h1 {
     font-size: 32px;
     margin: 0;
 }
 
-.item__content--brand {
-}
 
-.item__content--price{
+/* ==========================================================================
+   2. 商品詳細：ブランド・価格・いいね（マーク）
+   ========================================================================== */
+.item__content--brand {}
+
+/* 価格表示 */
+.item__content--price {
     display: flex;
     justify-content: flex-start;
     align-items: baseline;
     margin: 15px 0;
 }
 
-.item__content--price-unit{
+.item__content--price-unit {
     font-size: 20px;
 }
 
-.item__content--price-tag{
+.item__content--price-tag {
     font-size: 30px;
     margin: 0 2px;
 }
 
-.item__content--price-unit{
-}
+.item__content--price-unit {}
 
-.item__content--mark{
+/* いいね・マーク */
+.item__content--mark {
     display: flex;
     justify-content: flex-start;
 }
 
-.item__content--mark-unit{
+.item__content--mark-unit {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -61,36 +69,41 @@
     margin: 0 20px;
 }
 
-.item__content--mark-unit img{
+.item__content--mark-unit img {
     height: 30px;
 }
 
-.item__content--mark-count{
+.item__content--mark-count {
     font-size: 12px;
 }
 
-.item__info--wrapper{
+
+/* ==========================================================================
+   3. 商品詳細：スペック情報（テーブル風エリア）
+   ========================================================================== */
+.item__info--wrapper {
     display: flex;
     align-items: flex-center;
     margin: 0 0 20px;
 }
 
-.item__info--title{
+.item__info--title {
     width: 100px;
     font-weight: bold;
-
     flex-shrink: 0;
-
 }
 
-.item__info--content{
+.item__info--content {
     display: flex;
     align-items: center;
     font-size: 12px;
-
 }
 
 
+/* ==========================================================================
+   4. 商品詳細：カテゴリ・出品者情報
+   ========================================================================== */
+/* カテゴリタグ */
 .item__category--box {
     display: flex;
     /* 子要素を横並びにする */
@@ -98,7 +111,6 @@
     /* 横幅がいっぱいになったら折り返す */
     gap: 10px 15px;
     /* ボタン同士の上下左右の隙間（数値は自由） */
-
 }
 
 .item__category--select {
@@ -111,66 +123,72 @@
     /* 上下の中央揃え */
     height: 20px;
     background-color: lightgray;
-
     border-radius: 20px;
-    white-space: nowrap;    /* ボタン内の文字を絶対に途中で改行させない */
-    flex-shrink: 0;         /* ボタン自体がギュッと潰されるのを防ぐ */
+    white-space: nowrap;
+    /* ボタン内の文字を絶対に途中で改行させない */
+    flex-shrink: 0;
+    /* ボタン自体がギュッと潰されるのを防ぐ */
 }
 
-
-
-.item__content--picture{
+/* 出品者（ユーザー）プロフィール */
+.item__content--picture {
     display: flex;
     justify-content: flex-start;
     align-items: center;
 }
 
-.item__content--picture-photo{
+.item__content--picture-photo {
     height: 40px;
     width: 40px;
     border-radius: 50%;
     /* 角を50%丸めることで正円にする */
     object-fit: cover;
     /* 縦横比を崩さずに中央でトリミングする */
-    margin: 0 10px 0 0
+    margin: 0 10px 0 0;
 }
 
-.item__content--picture-name{
+.item__content--picture-name {
     font-weight: bold;
 }
 
+
+/* ==========================================================================
+   5. 商品詳細：コメントエリア
+   ========================================================================== */
 .item__comment-list {
     width: 100%;
 }
 
-.item__content--comment{
+.item__comment--wrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.item__content--comment {
     background-color: silver;
     width: 100%;
     padding: 10px;
     margin: 5px 0 25px;
     font-size: 12px;
-    box-sizing: border-box;     /* パディングや枠線を含めて100%にする（はみ出し防止） */
-    word-break: break-all;      /* 長い文字列でも枠内で自動折り返しする */
-    white-space: pre-wrap;      /* コメント内の改行をそのまま画面に反映させる */
+    box-sizing: border-box;
+    /* パディングや枠線を含めて100%にする（はみ出し防止） */
+    word-break: break-all;
+    /* 長い文字列でも枠内で自動折り返しする */
+    white-space: pre-wrap;
+    /* コメント内の改行をそのまま画面に反映させる */
 }
 
-.item__comment--wrap{
+.item__content--comment-form {
     width: 100%;
     display: flex;
     flex-direction: column;
 }
-
-
-.item__content--comment-form{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
 
 
 /* ==========================================================================
-   メルカリ風 SOLDリボン　　　サイズ調整
+   6. メルカリ風 SOLDリボン サイズ調整
+   ★★★大きさのみここで記述、詳細はcommon.cssに記載
    ========================================================================== */
 .sold-badge,
 .unsold-badge {
@@ -190,56 +208,4 @@
 .unsold-badge span {
     font-size: 32px;
     /* 💡 16px から 32px に拡大 */
-}
-
-/* ==========================================================================
-   JS不要の完了モーダル
-   ========================================================================== */
-/* チェックボックスのチェックが外れたらマスクごと非表示にする */
-#modal-trigger:not(:checked)~.modal-overlay {
-    display: none;
-}
-
-/* 背景を薄暗くするマスク */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
-}
-
-/* モーダルの白箱 */
-.modal-content {
-    background: #ffffff;
-    padding: 40px;
-    text-align: center;
-    border-radius: 8px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 400px;
-}
-
-.modal-text {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 30px;
-    color: #333333;
-}
-
-/* 閉じるラベル（ボタンに見えるように装飾） */
-.modal-close-btn {
-    display: block;
-    width: 100%;
-    padding: 12px 0;
-    text-align: center;
-    text-decoration: none;
-    cursor: pointer;
-    box-sizing: border-radius;
 }

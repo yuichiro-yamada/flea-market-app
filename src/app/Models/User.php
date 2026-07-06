@@ -55,32 +55,32 @@ class User extends Authenticatable implements MustVerifyEmail
         'password' => 'hashed',
     ];
 
-    // 出品した商品
+    // 出品した商品（1対多）
     public function soldItems(): HasMany
     {
         return $this->hasMany(Item::class, 'seller_id');
     }
 
-    // お気に入りした商品（多対多）
+    // お気に入りした商品とfavorite_itemsテーブルとitemsテーブル（多対多）
     public function favoriteItems(): BelongsToMany
     {
         return $this->belongsToMany(Item::class, 'favorite_items', 'user_id', 'item_id')
                     ->withTimestamps();
     }
 
-    // 投稿したコメント一覧
+    // 投稿したコメント一覧（1対多）
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
     }
 
-    // 販売履歴（出品者側）
+    // 販売履歴（出品者）（1対多）
     public function salesRecords(): HasMany
     {
         return $this->hasMany(SalesRecord::class, 'seller_id');
     }
 
-    // 購入履歴（購入者側）
+    // 購入履歴（購入者）（1対多）
     public function purchaseRecords(): HasMany
     {
         return $this->hasMany(SalesRecord::class, 'buyer_id');

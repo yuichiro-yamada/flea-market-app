@@ -46,7 +46,7 @@ class PurchaseTest extends TestCase
     /**
      * テストNo.1: 「購入する」ボタンを押下すると購入が完了する
      */
-    public function test_purchase_is_completed_successfully()
+    public function  test_1_「購入する」ボタンを押下すると購入が完了する(): void
     {
         // 1. ユーザーにログインして、2. 商品購入画面を開く
         $response = $this->actingAs($this->buyer)->get("/purchase/{$this->item->id}");
@@ -77,7 +77,7 @@ class PurchaseTest extends TestCase
     /**
      * テストNo.2: 購入した商品は商品一覧画面にて「sold」と表示される
      */
-    public function test_purchased_item_displays_sold_on_items_list()
+    public function test_2_購入した商品は商品一覧画面にて「sold」と表示される(): void
     {
         // 商品の販売状態を「3: SOLD OUT」に変更
         $this->item->update(['sales_status' => 3]);
@@ -93,9 +93,13 @@ class PurchaseTest extends TestCase
     /**
      * テストNo.3: 「プロフィール/購入した商品一覧」に追加されている
      */
-    public function test_purchased_item_is_added_to_profile_buy_list()
+    public function test_3_「プロフィール／購入した商品一覧」に追加されている(): void
     {
-        // 購入レコードを作成
+        // 1. 既存の商品の buyer_id を購入者のIDに更新する
+        $this->item->update([
+            'buyer_id' => $this->buyer->id
+        ]);
+        // ２。 購入レコードを作成
         SalesRecord::factory()->create([
             'seller_id' => $this->seller->id,
             'buyer_id' => $this->buyer->id,
@@ -107,18 +111,19 @@ class PurchaseTest extends TestCase
             'shipping_building' => $this->buyer->building,
         ]);
 
-        // 4. プロフィール画面を表示する
+        // 3. プロフィール画面を表示する
         $response = $this->actingAs($this->buyer)->get('/mypage?page=buy');
         $response->assertStatus(200);
 
-        // 購入した商品の「商品名」が画面に含まれているか確認
+        // 4. 購入した商品の「商品名」が画面に含まれているか確認
         $response->assertSee($this->item->item_name);
     }
 
     /**
      * テストNo.4: 小計画面で変更が反映される
+
      */
-    public function test_payment_method_change_is_reflected()
+    public function test_4_小計画面で変更が反映される()): void
     {
         // 1. 支払い方法選択画面（購入画面）を開く
         $this->actingAs($this->buyer);
@@ -145,7 +150,7 @@ class PurchaseTest extends TestCase
     /**
      * テストNo.5: 送付先住所変更画面にて登録した住所が商品購入画面に反映されている
      */
-    public function test_registered_shipping_address_is_reflected_on_purchase_screen()
+    public function test_5_付先住所変更画面にて登録した住所が商品購入画面に反映されている()): void
     {
         $this->actingAs($this->buyer);
 
@@ -171,7 +176,7 @@ class PurchaseTest extends TestCase
     /**
      * テストNo.6: 購入した商品に送付先住所が紐づいて登録される
      */
-    public function test_purchased_item_is_linked_with_registered_shipping_address()
+    public function test_6_購入した商品に送付先住所が紐づいて登録される()): void
     {
         $this->actingAs($this->buyer);
 

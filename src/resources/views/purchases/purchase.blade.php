@@ -92,19 +92,25 @@
             </div>
 
             {{-- 配送先住所の有無によるボタン表示制御 --}}
-            @if (empty($postcode) || empty($address))}
-                {{-- 配送先住所ない場合は非活性 --}}
+            @if ($item->seller_id == Auth::user()->id)
                 <button type="button" class="common__button--disabled" disabled>購入する</button>
                 <div class="error-message">
-                    配送先住所を設定してください
+                    出品者ご本人のためご注文できません
                 </div>
             @else
-                {{-- 配送先住所ある場合は活性 --}}
-                <button type="submit" class="common__button">
-                    購入する
-                </button>
+                @if (empty($postcode) || empty($address))
+                    {{-- 配送先住所ない場合は非活性 --}}
+                    <button type="button" class="common__button--disabled" disabled>購入する</button>
+                    <div class="error-message">
+                        配送先住所を設定してください
+                    </div>
+                @else
+                    {{-- 配送先住所ある場合は活性 --}}
+                    <button type="submit" class="common__button">
+                        購入する
+                    </button>
+                @endif
             @endif
-
         </div>
     </form>
 </div>
@@ -113,7 +119,9 @@
 <script>
 function submitPaymentMethod(value) {
     if (value === '選択してください') return;
+    // 画面の一番上にある「隠しフォーム」の入力欄（hidden）に、選んだ値（0か1）をコピーする
     document.getElementById('hiddenPaymentMethod').value = value;
+    // 画面上部にある id="paymentMethodForm" の隠しフォームをsubmitする
     document.getElementById('paymentMethodForm').submit();
 }
 </script>

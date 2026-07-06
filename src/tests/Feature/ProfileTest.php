@@ -15,7 +15,7 @@ class ProfileTest extends TestCase
     /**
      * 1. 必要な情報が取得できる（プロフィール画像、ユーザー名、出品した商品一覧、購入した商品一覧）
      */
-    public function test_profile_page_displays_necessary_information_and_item_lists()
+    public function test_1_必要な情報が取得できる（プロフィール画像、ユーザー名、出品した商品一覧、購入した商品一覧）(): void
     {
         // テスト用ユーザーの作成（カラム名はmember_name）
         $user = User::factory()->create([
@@ -27,11 +27,24 @@ class ProfileTest extends TestCase
         $other_user = User::factory()->create();
 
         // 自分が「出品した」商品と、他人が出品した商品を作成
-        $my_sell_item = Item::factory()->create(['item_name' => '私が出品した商品A', 'seller_id' => $user->id]);
-        $other_sell_item = Item::factory()->create(['item_name' => '他人が出品した商品X', 'seller_id' => $other_user->id]);
+        $my_sell_item = Item::factory()->create([
+            'item_name' => '私が出品した商品A', 
+            'seller_id' => $user->id,
+        ]);
+        $other_sell_item = Item::factory()->create([
+            'item_name' => '他人が出品した商品X', 
+            'seller_id' => $other_user->id,
+            ]);
 
         // 自分が「購入した」商品の作成（SalesRecordテーブルと紐付け）
-        $my_buy_item = Item::factory()->create(['item_name' => '私が購入した商品B', 'seller_id' => $other_user->id]);
+        $response = $this->actingAs($user)->get('/mypage?page=buy');
+        $response->assertStatus(200);
+
+        $my_buy_item = Item::factory()->create([
+            'item_name' => '私が購入した商品B', 
+            'seller_id' => $other_user->id,
+            'buyer_id' => $user->id,
+        ]);
         SalesRecord::factory()->create([
             'buyer_id' => $user->id,
             'item_id' => $my_buy_item->id,
@@ -60,7 +73,7 @@ class ProfileTest extends TestCase
     /**
      * 2. 変更項目が初期値として過去設定されていること（プロフィール画像、ユーザー名、郵便番号、住所）
      */
-    public function test_profile_edit_page_displays_default_values_correctly()
+    public function test_2_変更項目が初期値として過去設定されていること（プロフィール画像、ユーザー名、郵便番号、住所）(): void
     {
         // 既存のユーザー情報を設定して作成
         $user = User::factory()->create([

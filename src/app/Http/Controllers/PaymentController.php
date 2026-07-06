@@ -50,21 +50,19 @@ class PaymentController extends Controller
     public function success(Request $request)
     {
         $sessionId = $request->query('session_id');
+
+        // Stripeのセッション情報を取得（商品名を取得するために使う）
         Stripe::setApiKey(env('STRIPE_SECRET'));
         $session = Session::retrieve($sessionId);
-        $paymentMethodStr = $session->payment_method_types[0] ?? null;
-        
-        if ($paymentMethodStr === 'konbini') {
-            $item = Item::findOrFail($session->metadata->item_id);
-            $item->update([
-                'sales_status' => 2,
-            ]);
-        }
 
-        // 5. 商品詳細画面へリダイレクト（同時に「購入完了フラグ」をセッションに持たせる）
+        // メタデータから商品IDを取り出し、商品名を取得する
+        $item = Item::findOrFail($session->metadata->item_id);
+
+        // 商品詳細画面へリダイレクト（同時に「購入完了フラグ」をセッションに持たせる）
         // 購入完了フラグをセッションに持たせることで購入画面から商品詳細画面へ遷移した(購入した)直後であることを伝える
         // このセッション情報は次ページを標示し終わった後、削除される（フラッシュデータ）
-        return redirect()->route('mypage', ['page' => 'buy'])->with('purchase_completed', true);
+        return redirect()->route('mypage', ['page' => 'buy'])
+            ->with('modal_message', "{$item->item_name}\nの購入が完了しました！");
     }
 
     public function cancel()

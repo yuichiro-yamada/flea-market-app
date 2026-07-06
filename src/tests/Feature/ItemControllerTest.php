@@ -14,7 +14,7 @@ class ItemControllerTest extends TestCase
     /**
      * 1. 全商品を取得できる
      */
-    public function test_all_items_are_displayed_on_homepage()
+    public function test_1_全商品を取得できる(): void
     {
         $item1 = Item::factory()->create(['item_name' => '商品A', 'sales_status' => 1]);
         $item2 = Item::factory()->create(['item_name' => '商品B', 'sales_status' => 1]);
@@ -29,7 +29,7 @@ class ItemControllerTest extends TestCase
     /**
      * 2. 購入済み商品は「SOLD」と表示される
      */
-    public function test_sold_out_items_display_sold_label()
+    public function test_2_購入済み商品は「SOLD」と表示される(): void
     {
         $sold_item = Item::factory()->create(['item_name' => '売り切れ商品', 'sales_status' => 3]);
 
@@ -43,7 +43,7 @@ class ItemControllerTest extends TestCase
     /**
      * 3. 自分が出品した商品は表示されない
      */
-    public function test_my_own_items_are_not_displayed_when_logged_in()
+    public function test_3_自分が出品した商品は表示されない(): void
     {
         $me = User::factory()->create();
         $other_user = User::factory()->create();
@@ -61,7 +61,7 @@ class ItemControllerTest extends TestCase
     /**
      * 4. 「商品名」で部分一致検索ができる
      */
-    public function test_items_can_be_searched_by_name_partially()
+    public function test_4_「商品名」で部分一致検索ができる(): void
     {
         $match_item = Item::factory()->create(['item_name' => '最新のスマートフォン', 'sales_status' => 1]);
         $unmatch_item = Item::factory()->create(['item_name' => 'クラシックな時計', 'sales_status' => 1]);
@@ -77,7 +77,7 @@ class ItemControllerTest extends TestCase
     /**
      * 5. 検索状態がマイリストでも保持されている
      */
-    public function test_search_keyword_is_retained_on_mylist_tab()
+    public function test_5_検索状態がマイリストでも保持されている(): void
     {
         // ⭕ パラメーター名を「keyword」に修正
         $response = $this->get('/?keyword=スマート&tab=mylist');
@@ -89,7 +89,7 @@ class ItemControllerTest extends TestCase
     /**
      * 6. 必要な情報が表示される（詳細ページ）
      */
-    public function test_item_detail_page_displays_all_necessary_information()
+    public function test_6_必要な情報が表示される（詳細ページ）(): void
     {
         $seller = User::factory()->create();
         $comment_user = User::factory()->create(['member_name' => 'コメント太郎']);
@@ -129,7 +129,7 @@ class ItemControllerTest extends TestCase
     /**
      * 7. 複数選択されたカテゴリが表示されているか
      */
-    public function test_multiple_selected_categories_are_displayed_on_detail_page()
+    public function test_7_複数選択されたカテゴリが表示されているか(): void
     {
         $category1_id = \DB::table('categories')->insertGetId(['category_name' => 'ファッション']);
         $category2_id = \DB::table('categories')->insertGetId(['category_name' => 'メンズ']);

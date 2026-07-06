@@ -61,33 +61,39 @@ class Item extends Model
     }
 
 
-    // 出品者
+    // 出品者（User）（多対1）
     public function seller(): BelongsTo
     {
         return $this->belongsTo(User::class, 'seller_id');
     }
 
-    // この商品をお気に入りしているユーザー（多対多）
+    // 購入者（User）（多対1）
+    public function buyer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'buyer_id');
+    }
+
+    // 商品とfavorite_itemsテーブルとusersテーブル（多対多）
     public function favoritedByUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'favorite_items', 'item_id', 'user_id')
                     ->withTimestamps();
     }
 
-    // 商品へのコメント一覧
+    // 商品へのコメント一覧（1対多）
     public function reviews(): HasMany
     {
-        return $this->hasMany(Review::class);
+         return $this->hasMany(Review::class);
     }
 
-    // 紐づくカテゴリ（多対多）
+    // 商品とitem_categoriesテーブルとcategoriesテーブル（多対多）
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'item_categories', 'item_id', 'category_id')
                     ->withTimestamps();
     }
 
-    // 販売履歴（1対1の関係）
+    // 販売履歴（1対1）
     public function salesRecord(): HasOne
     {
         return $this->hasOne(SalesRecord::class);

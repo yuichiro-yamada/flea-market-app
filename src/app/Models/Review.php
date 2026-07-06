@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Review extends Model
 {
+    // 紐づく中間テーブル名を明示
+    protected $table = 'reviews';
+
     protected $fillable = [
         'user_id',
         'item_id',
@@ -20,7 +23,7 @@ class Review extends Model
         return $this->belongsTo(User::class);
     }
 
-    // 対象の商品
+    // コメントした商品
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class);
