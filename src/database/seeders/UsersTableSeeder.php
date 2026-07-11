@@ -6,6 +6,9 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+
 
 class UsersTableSeeder extends Seeder
 {
@@ -14,6 +17,31 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
+        // コピー元のディレクトリ（public/images/profile_test/）
+        $sourcePath = public_path('images/profile_test');
+        
+        // コピー先のストレージディレクトリ（storage/app/public/images/profile）
+        $targetDir = 'images/profile';
+
+        // コピー元が存在するかチェック
+        if (!File::exists($sourcePath)) {
+            // ログに出力するか、例外を投げて知らせる
+            throw new \Exception("コピー元のディレクトリが見つかりません: " . $sourcePath);
+        }
+
+        // コピー先のディレクトリがなければ作成する
+        if (!Storage::disk('public')->exists($targetDir)) {
+            Storage::disk('public')->makeDirectory($targetDir);
+        }
+
+        $files = File::files($sourcePath);
+
+        foreach ($files as $file) {
+            $fileName = $file->getFilename();
+            $targetPath = $targetDir . '/' . $fileName;
+            Storage::disk('public')->put($targetPath, fopen($file->getRealPath(), 'r'));
+        }
+
         // 4名分のユーザーデータを定義
         $users = [
             [

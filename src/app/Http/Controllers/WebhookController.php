@@ -8,7 +8,7 @@ use Stripe\Webhook;
 use Stripe\Exception\SignatureVerificationException;
 use App\Models\Item;
 use App\Models\User;
-use App\Models\SalesRecord;
+use App\Services\PurchaseService;
 
 class WebhookController extends Controller
 {
@@ -43,9 +43,10 @@ class WebhookController extends Controller
         // Stripeから商品IDと購入者IDを取り出す
         $item_id = $session->metadata->item_id;
         $buyer_id = $session->metadata->buyer_id;
-        // 取り出した商品IDと購入者IDを元にDBから該当する商品とユーザーの情報を取り出す
-        $item = Item::findOrFail($item_id);
+        // 購入者IDを元にDBから購入者情報を取得
         $user = User::findOrFail($buyer_id);
+
+        $purchaseService = new PurchaseService();
 
         // Stripeの画面で「購入ボタン」を押した際に実行された時
         if ($event->type === 'checkout.session.completed') {
@@ -53,66 +54,30 @@ class WebhookController extends Controller
             // お金を払っていない（unpaid＝コンビニ決済）場合
             if ($session->payment_status === 'unpaid') {
 
-                // itemsテーブルの販売状態を2（取引中）へ変更
-                $item->update([
-                    'sales_status' => 2,
-                    'buyer_id'     => $user->id,
-                ]);
-
-                // userテーブルのお届け先住所情報をクリア
-                $user->shipping_postcode = null;
-                $user->shipping_address = null;
-                $user->shipping_building = null;
-                $user->save();
+                $purchaseService->reservePurchase($item_id, $user);
 
                 return response()->json(['status' => 'waiting']);
 
             } else {      // クレジットカード決済の場合（paid）
 
-                $this->completePurchase($item, $user, $paymentMethodId);
+                // app/Services/PurchaseService.phpのompletePurchaseを呼び出してDB保存
+                $purchaseService->completePurchase($item_id, $user, $paymentMethodId);
 
                 return response()->json(
                     ['status' => 'success'],200);
             }
         }
 
-        // 後からお金が支払われた時
+        // 後からお金が支払われた時（コンビニ決済実行3分後）
         if ($event->type === 'checkout.session.async_payment_succeeded') {
             \Log::info('async_payment_succeeded');
 
-            $this->completePurchase($item, $user, $paymentMethodId);
+            // app/Services/PurchaseService.phpのompletePurchaseを呼び出してDB保存
+            $purchaseService->completePurchase($item_id, $user, $paymentMethodId);
 
             return response()->json(['status' => 'success'], 200);
         }
 
         return response()->json(['status' => 'success']);
-    }
-
-    // 決済完了処理共通処理
-    private function completePurchase(Item $item, User $user, int $paymentMethodId)
-    {
-        // sales_recordsテーブルに新規レコードを追加
-        SalesRecord::create([
-            'item_id'           => $item->id,
-            'seller_id'         => $item->seller_id,
-            'buyer_id'          => $user->id,
-            'payment_method'    => $paymentMethodId,
-            'purchase_price'    => $item->item_price,
-            'shipping_postcode' => $user->shipping_postcode ?? $user->postcode,
-            'shipping_address'  => $user->shipping_address ?? $user->address,
-            'shipping_building' => $user->shipping_building ?? $user->building,
-        ]);
-
-        // itemsテーブルの販売状態を3(SOLD OUT)へ変更
-        $item->update([
-            'sales_status' => 3,
-            'buyer_id'     => $user->id,
-        ]);
-
-        // 一時保存していたuserテーブルのお届け先住所情報をクリア
-        $user->shipping_postcode = null;
-        $user->shipping_address = null;
-        $user->shipping_building = null;
-        $user->save();
     }
 }

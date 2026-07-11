@@ -5,10 +5,10 @@
 @endsection
 
 @section('content')
-{{-- 1. 支払い方法変更用の隠しフォーム（PATCH送信専用） --}}
+{{-- 支払い方法変更用の隠しフォーム（PATCH送信専用） --}}
 <form id="paymentMethodForm" action="/purchase/{{ $item->id }}" method="POST" style="display: none;">
     @csrf
-    @method('PATCH') {{-- ⭕ テストが期待するPATCHメソッドを指定 --}}
+    @method('PATCH')
     <input type="hidden" name="payment_method" id="hiddenPaymentMethod">
 </form>
 
@@ -28,10 +28,10 @@
             <div class="purchase__payment--title">支払い方法</div>
             <div class="purchase__select-box--wrapper">
 
-                {{-- 💡 JavaScriptを修正：選択された値を隠しフォームに移して、PATCH送信（submit）させます --}}
+                {{-- 支払い方法を変更したら、JavaScript経由でPATCHリクエストを送信 --}}
                 <select class="purchase__select-box" name="payment_method" onchange="submitPaymentMethod(this.value)">
                     <option>選択してください</option>
-                    {{-- 💡 テストの最後の行 assertSee($new_payment_method) 対策として、valueに 0 や 1 を明示 --}}
+                    {{-- DBで管理している支払い方法の値（0: クレジットカード、1: コンビニ） --}}
                     <option value="0" {{ $payment_method === '0' || (Auth::user()->default_payment_method === 0 && is_null($payment_method)) ? 'selected' : '' }}>クレジットカード支払い</option>
                     <option value="1" {{ $payment_method === '1' || (Auth::user()->default_payment_method === 1 && is_null($payment_method)) ? 'selected' : '' }}>コンビニ支払い</option>
                 </select>
@@ -44,12 +44,12 @@
             <div class="purchase__delivery--wrap">
                 <div class="purchase__delivery--title">配送先</div>
                 <div>
-                    {{-- 💡 リンク先を 住所変更画面（address.edit）に設定 --}}
+                    {{-- 配送先住所の変更画面へ遷移 --}}
                     <a href="{{ route('address.edit', ['item_id' => $item, 'payment_method' => $payment_method]) }}">変更する</a>
                 </div>
             </div>
             <div class="purchase__delivery--address">
-                {{-- 💡 ログインユーザーの住所、または変更後の住所が動的に表示されます --}}
+                {{-- 現在の配送先住所を表示（変更後の住所を優先） --}}
                 〒{{ $postcode }}<br>
                 {{ $address }} {{ $building }}
             </div>
@@ -57,13 +57,16 @@
     </div>
 
 
-    {{-- 2. 購入確定用のフォーム（POST送信専用） --}}
+    {{-- 購入確定時にStripe決済へ遷移するPOSTフォーム --}}
     <form action="{{ route('payment.checkout') }}" method="POST" class="purchase__summary">
         @csrf
-        {{-- コントローラーでの購入確定時に必要な情報を隠しフィールドで保持 --}}
-        <input type="hidden" name="payment_method" value="{{ $payment_method ?? Auth::user()->default_payment_method }}">
+        {{-- 購入処理に必要な支払い方法を保持 --}}
+        <input type="hidden" 
+            id="checkoutPaymentMethod" 
+            name="payment_method" 
+            value="{{ $payment_method ?? Auth::user()->default_payment_method }}">
 
-        {{-- Stripeへ送信 --}}
+        {{-- Stripe決済に必要な商品情報 --}}
         <input type="hidden" name="product_name" value="{{ $item->item_name }}">
         <input type="hidden" name="price" value="{{ $item->item_price }}">
         <input type="hidden" name="item_id" value="{{ $item->id }}">
@@ -78,13 +81,11 @@
                     <div class="purchase__summary--title">支払い方法</div>
                     <div class="purchase__summary--content">
 
-                        {{-- 💡 ユーザーのDB設定値、または選択中の値を表示 --}}
+                        {{-- 現在選択されている支払い方法を表示 --}}
                         @if(($payment_method ?? Auth::user()->default_payment_method) == 1)
                             コンビニ支払い
-                            <input type="hidden" name="payment_method" value="konbini">
                         @else
                             クレジットカード支払い
-                            <input type="hidden" name="payment_method" value="card">
                         @endif
 
                     </div>
@@ -115,13 +116,18 @@
     </form>
 </div>
 
-{{-- 💡 支払い方法変更を即座にPATCH送信するための短いJavaScript --}}
+{{-- 支払い方法変更を即座にPATCH送信するための短いJavaScript --}}
 <script>
 function submitPaymentMethod(value) {
     if (value === '選択してください') return;
-    // 画面の一番上にある「隠しフォーム」の入力欄（hidden）に、選んだ値（0か1）をコピーする
+
+    // PATCH送信用
     document.getElementById('hiddenPaymentMethod').value = value;
-    // 画面上部にある id="paymentMethodForm" の隠しフォームをsubmitする
+
+    // 購入フォーム用
+    document.getElementById('checkoutPaymentMethod').value = value;
+
+    // DB更新
     document.getElementById('paymentMethodForm').submit();
 }
 </script>

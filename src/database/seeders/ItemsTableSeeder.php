@@ -5,14 +5,38 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class ItemsTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
+        // コピー元のディレクトリ（public/images/items_test/）
+        $sourcePath = public_path('images/items_test');
+        
+        // コピー先のストレージディレクトリ（storage/app/public/images/items）
+        $targetDir = 'images/items';
+
+        // コピー元が存在するかチェック
+        if (!File::exists($sourcePath)) {
+            // ログに出力するか、例外を投げて知らせる
+            throw new \Exception("コピー元のディレクトリが見つかりません: " . $sourcePath);
+        }
+
+        // コピー先のディレクトリがなければ作成する
+        if (!Storage::disk('public')->exists($targetDir)) {
+            Storage::disk('public')->makeDirectory($targetDir);
+        }
+
+        $files = File::files($sourcePath);
+
+        foreach ($files as $file) {
+            $fileName = $file->getFilename();
+            $targetPath = $targetDir . '/' . $fileName;
+            Storage::disk('public')->put($targetPath, fopen($file->getRealPath(), 'r'));
+        }
+
         DB::table('items')->insert([
             [
                 'id' => 1,

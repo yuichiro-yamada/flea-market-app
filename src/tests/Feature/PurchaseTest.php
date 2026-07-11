@@ -52,8 +52,9 @@ class PurchaseTest extends TestCase
         $response = $this->actingAs($this->buyer)->get("/purchase/{$this->item->id}");
         $response->assertStatus(200);
 
-        // 3. 商品を選択して「購入する」ボタンを押下
-        $response = $this->post("/purchase/{$this->item->id}", [
+        // 3. 商品を選択して「購入する」ボタンを押下 (post から patch に変更)
+        $response = $this->post("/checkout", [
+            'item_id'        => $this->item->id,
             'payment_method' => $this->buyer->default_payment_method,
         ]);
 
@@ -123,7 +124,7 @@ class PurchaseTest extends TestCase
      * テストNo.4: 小計画面で変更が反映される
 
      */
-    public function test_4_小計画面で変更が反映される()): void
+    public function test_4_小計画面で変更が反映される(): void
     {
         // 1. 支払い方法選択画面（購入画面）を開く
         $this->actingAs($this->buyer);
@@ -150,7 +151,7 @@ class PurchaseTest extends TestCase
     /**
      * テストNo.5: 送付先住所変更画面にて登録した住所が商品購入画面に反映されている
      */
-    public function test_5_付先住所変更画面にて登録した住所が商品購入画面に反映されている()): void
+    public function test_5_付先住所変更画面にて登録した住所が商品購入画面に反映されている(): void
     {
         $this->actingAs($this->buyer);
 
@@ -176,7 +177,7 @@ class PurchaseTest extends TestCase
     /**
      * テストNo.6: 購入した商品に送付先住所が紐づいて登録される
      */
-    public function test_6_購入した商品に送付先住所が紐づいて登録される()): void
+    public function test_6_購入した商品に送付先住所が紐づいて登録される(): void
     {
         $this->actingAs($this->buyer);
 
@@ -188,7 +189,8 @@ class PurchaseTest extends TestCase
         ]);
 
         // 3. 商品を購入する
-        $this->post("/purchase/{$this->item->id}", [
+        $this->post('/checkout', [
+            'item_id' => $this->item->id,
             'payment_method' => $this->buyer->default_payment_method,
         ]);
 

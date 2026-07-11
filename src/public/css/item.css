@@ -12,10 +12,10 @@
 
 .item__picture--photo {
     width: 520px;
-    height: auto;
-    /* 高さを自動計算にして縦横比を維持する */
-    object-fit: contain;
-    /* 画像が歪んだり潰れたりするのを防ぐ */
+    aspect-ratio: 1 / 1;
+    /* 幅に合わせて高さを自動で「1:1（正方形）」にする */
+    object-fit: cover;
+    /* 縦横比を維持、正方形の枠に合わせてトリミング表示 */
 }
 
 .item__content {

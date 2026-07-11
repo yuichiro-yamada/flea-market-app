@@ -13,11 +13,10 @@
         <!-- 点線の枠エリア -->
         <div class="sell__photo--box">
             <div class="sell__photo--inner-container">
-                <!-- 画像を選択するボタン -->
                 <label style="cursor: pointer;" onclick="document.getElementById('hiddenItemImage').click();">
                     <div class="profile__picture--select">画像を選択する</div>
                 </label>
-                <!-- 💡 画像専用のファイル入力欄をここに配置します（見た目は消したままでOKです） -->
+                <!-- 画像専用のファイル入力欄、見た目は非表示 -->
                 <input type="file" id="hiddenItemImage" name="item_image" accept="image/*" style="display: none;" onchange="checkItemImageSize(this)">
 
                 <!-- プレビュー画像表示 -->
@@ -76,10 +75,7 @@
         <div class="common__subsection">商品の状態</div>
         <div class="sell__select-box--wrapper">
         <select class="sell__select-box" name="condition">
-            <!-- 💡 初期状態として「選択してください」を用意し、エラー時も選択を保持できるようにします -->
             <option value="" {{ old('condition') === null ? 'selected' : '' }} disabled>選択してください</option>
-            
-            <!-- 💡 モデルのアクセサ（match構文）の数値と完全に一致させました -->
             <option value="4" {{ old('condition') == '4' ? 'selected' : '' }}>良好</option>
             <option value="3" {{ old('condition') == '3' ? 'selected' : '' }}>目立った傷や汚れなし</option>
             <option value="2" {{ old('condition') == '2' ? 'selected' : '' }}>やや傷や汚れあり</option>
@@ -128,7 +124,6 @@
             @enderror
         </div>
 
-        {{-- ⭕ 普通のsubmitボタン。押すと100%確実に sell.store（本番保存）へ飛びます --}}
         <button type="submit" class="common__button">出品する</button>
     </form> 
 </div>
@@ -148,7 +143,6 @@ function checkItemImageSize(input) {
         }
     }
 
-    // 💡 ここから下を改良しました！
     // 1. 画像が選択されたフォーム自体を掴む
     const form = input.form;
 
@@ -166,13 +160,12 @@ function checkItemImageSize(input) {
     form.submit();
 }
 
-// 💡 🌟 ここから下のコードを新しく追加してください！
-// 「出品する」ボタンを押したときは、送信先を必ず本来の「本番保存（/sell）」に戻す仕掛けです
+// 「出品する」ボタンを押したときは、送信先を本来の「本番保存（/sell）」に戻す
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('sellForm');
     if (form) {
         form.addEventListener('submit', function() {
-            // 送信ボタンが押された瞬間、送信先を本来のストア処理のURLへ強制リセットします
+            // 送信ボタンが押された瞬間、送信先を本来のストア処理のURLへ強制リセット
             form.action = "{{ route('sell.store') }}";
         });
     }

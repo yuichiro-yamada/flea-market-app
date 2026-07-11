@@ -22,32 +22,32 @@ class SellRequest extends FormRequest
     public function rules(): array
     {
         return [
-        // 1つ以上の選択を必須（required）にし、配列（array）であることを検証
-        'category_ids' => ['required', 'array', 'min:1'],
-        // カテゴリIDの各中身が categories テーブルに存在するかを個別にチェック
-        'category_ids.*' => ['exists:categories,id'],
+            // 1つ以上の選択を必須（required）にし、配列（array）であることを検証
+            'category_ids' => ['required', 'array', 'min:1'],
+            // カテゴリIDの各中身が categories テーブルに存在するかを個別にチェック
+            'category_ids.*' => ['exists:categories,id'],
 
-        // 商品の状態（例: 選択ボックスの値は数値になるため integer を指定）
-        'condition' => ['required', 'integer'],
+            // 商品の状態（例: 選択ボックスの値は数値になるため integer を指定）
+            'condition' => ['required', 'integer'],
 
-        // 商品名
-        'item_name' => ['required', 'string', 'max:255'],
+            // 商品名
+            'item_name' => ['required', 'string', 'max:255'],
 
-        // 画像ファイル（最大2MBまで）
-        // 一時保存パス（item_tmp_image_path）がない時だけ必須
-        'item_image' => 'required_without:item_tmp_image_path|image|mimes:jpeg,png,jpg,gif|max:2048',
-        
-        // 一時保存の画像パスが届く可能性もあるため、ルールを定義しておく
-        'item_tmp_image_path' => 'nullable|string',
+            // 画像ファイル（最大2MBまで）
+            // 一時保存パス（item_tmp_image_path）がない時だけ必須
+            'item_image' => 'required_without:item_tmp_image_path|image|mimes:jpeg,png,jpg,gif|max:2048',
+            
+            // 一時保存の画像パスが届く可能性もあるため、ルールを定義しておく
+            'item_tmp_image_path' => 'nullable|string',
 
-        // ブランド
-        'brand_name' => ['nullable','string', 'max:255'],
+            // ブランド
+            'brand_name' => ['nullable','string', 'max:255'],
 
-        // 説明（1000文字まで）
-        'item_detail' => ['required', 'string', 'max:1000'],
+            // 説明（1000文字まで）
+            'item_detail' => ['required', 'string', 'max:1000'],
 
-        // 販売価格（最低50円〜最大約1000万円までに制限）
-        'item_price' => ['required', 'integer', 'min:50', 'max:9999999'],
+            // 販売価格（最低50円〜最大約1000万円までに制限）
+            'item_price' => ['required', 'integer', 'min:50', 'max:9999999'],
         ];
     }
 

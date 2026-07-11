@@ -8,6 +8,7 @@ use Stripe\Checkout\Session;
 use App\Models\Item;
 use App\Models\SalesRecord;
 use Illuminate\Support\Facades\Auth;
+use App\Services\PurchaseService;
 
 class PaymentController extends Controller
 {
@@ -17,28 +18,50 @@ class PaymentController extends Controller
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         // 1. 支払い方法の初期値を設定
-        $paymentTypes = ['card']; // デフォルトはクレジットカード
-        if ($request->payment_method === 'konbini') {
+        $paymentTypes = ['card'];
+
+        if ((int)$request->payment_method === 1) {
             $paymentTypes = ['konbini'];
         }
 
          // 3. セッションの作成
+        $item = Item::findOrFail($request->item_id);
+        $user = Auth::user();
+
+        // 販売中絵なければStripe決済画面へ遷移せず、戻ってエラーモーダル表示
+        if ($item->sales_status !== 1) {
+            return back()->with('error', 'この商品は既に購入されています');
+        }
+
+        // PHPunitによるテストならStripeを利用しない
+        if (app()->environment('testing')) {
+
+            $this->purchaseService->completePurchase(
+                $item,
+                $user,
+                (int)$request->payment_method
+            );
+
+            return redirect('/mypage?page=buy');
+        }
+
+        // PHPunitによるテストではないならStripeを利用
         $session = Session::create([
             'payment_method_types' => $paymentTypes, // ここに変数を入れる
             'line_items' => [[
                 'price_data' => [
                     'currency' => 'jpy',
                     'product_data' => [
-                        'name' => $request->product_name,
+                        'name' => $item->item_name,
                     ],
-                    'unit_amount' => $request->price,
+                    'unit_amount' => $item->item_price,
                 ],
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
             'metadata' => [
-                'item_id' => $request->item_id, // 画面から送られてきた商品のID
-                'buyer_id' => Auth::user()->id, // 💡購入手続き中のユーザーIDを金庫に預ける
+                'item_id' => $request->item_id,
+                'buyer_id' => Auth::id(),
             ],
             'success_url' => route('payment.success') . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('payment.cancel'),
@@ -58,16 +81,49 @@ class PaymentController extends Controller
         // メタデータから商品IDを取り出し、商品名を取得する
         $item = Item::findOrFail($session->metadata->item_id);
 
-        // 商品詳細画面へリダイレクト（同時に「購入完了フラグ」をセッションに持たせる）
-        // 購入完了フラグをセッションに持たせることで購入画面から商品詳細画面へ遷移した(購入した)直後であることを伝える
-        // このセッション情報は次ページを標示し終わった後、削除される（フラッシュデータ）
+        $salesRecord = null;
+        $retry = 5;
+
+        while ($retry--) {
+            // sales_recordsテーブルにレコードがあるか確認
+            $salesRecord = SalesRecord::where('item_id', $item->id)->first();
+
+            if ($salesRecord) {
+                break;
+            }
+
+            // Webhookでsales_recordsが作成されるまで最大1.5秒(0.3秒　X　５回)待機する
+            usleep(３00000);
+        }
+
+        // ケース1：レコードがなかった場合
+        if (!$salesRecord) {
         return redirect()->route('mypage', ['page' => 'buy'])
-            ->with('modal_message', "{$item->item_name}\nの購入が完了しました！");
+            ->with('modal_message', "申し訳ございません\n何らかの原因で\n{$item->item_name}\nの」購入に失敗しました");
+        }
+
+        // ケース２：レコードはあって購入者が自分だった場合
+        if ($salesRecord->buyer_id === auth()->id()) {
+            return redirect()->route('mypage', ['page' => 'buy'])
+                ->with('modal_message', "{$item->item_name}\nの購入が完了しました！");
+        }
+
+        // ケース１・２にあてはまらなかった場合
+        return redirect()->route('mypage', ['page' => 'buy'])
+            ->with('modal_message', "申し訳ございません\n{$item->item_name}\nは他の方に購入されてしまいました");
     }
+
 
     public function cancel()
     {
         // 決済キャンセル時の処理
         return view('payment.cancel');
     }
+
+    public function __construct(
+        private PurchaseService $purchaseService
+    ) {
+    }
 }
+
+

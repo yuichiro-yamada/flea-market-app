@@ -18,7 +18,7 @@ class PurchaseController extends Controller
 
         // ステータスが「販売中」以外なら注文できない旨を返す
         if($item->sales_status !== 1 ){
-            return redirect()->route('items.show', $item->id)->with('modal_message', true);
+            return redirect()->route('items.show', $item->id)->with('modal_message', "この商品は既に購入されています");
         }
         // DBに送付先住所があれば設定、なければユーザーの登録住所を設定
         $postcode = $user->shipping_postcode ?? $user->postcode;
@@ -37,9 +37,7 @@ class PurchaseController extends Controller
         return view('purchases.purchase', compact('item', 'postcode', 'address', 'building', 'payment_method'));
     }
 
-/**
- * 支払い方法を即時更新する（PATCH /purchase/{item_id}）
- */
+// 支払い方法を即時更新する（PATCH /purchase/{item_id}
 public function updatePaymentMethod(Request $request, $item_id)
 {
     // ログイン中のユーザーを取得

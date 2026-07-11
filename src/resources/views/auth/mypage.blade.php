@@ -9,7 +9,7 @@
 @auth
     <div class="mypage__form">
         <div class="mypage__picture">
-            <img src="{{ $user->member_image && file_exists(public_path('storage/images/profile/' . $user->member_image)) ? '/storage/images/profile/' . $user->member_image : '/storage/images/profile/silver.png' }}" class="common__picture--photo">
+            <img src="{{ asset('storage/images/profile/' . $user->member_image) }}" class="common__picture--photo">
 
             <div class="mypage__name">{{ $user->member_name }}</div>
             <a href="mypage/profile" class="mypage__picture--select">プロフィールを編集</a>
@@ -23,13 +23,13 @@
 
 <div class="index__menu">
     <div class="index__menu--wrapper">
-        <!-- 出品した商品ボタン -->
+        {{-- 表示中のページ（sell）に応じてアクティブクラスを動的に切り替え --}}
         <a href="{{ url('/mypage?page=sell') }}" 
            class="{{ $page === 'sell' ? 'index__menu--link-red' : 'index__menu--link' }}">
             出品した商品
         </a>
         
-        <!-- 購入した商品ボタン -->
+        {{-- 表示中のページ（buy）に応じてアクティブクラスを動的に切り替え --}}
         <a href="{{ url('/mypage?page=buy') }}" 
            class="{{ $page === 'buy' ? 'index__menu--link-red' : 'index__menu--link' }}">
             購入した商品
@@ -44,12 +44,16 @@
         @else
             @foreach($items as $item)
             <div class="index__items--box">
-                {{-- 💡 親のdivに position: relative と overflow: hidden を直接インラインで強制指定します --}}
+                {{-- 親のdivに position: relative と overflow: hidden を直接インラインで強制指定 --}}
                 <a href="{{ route('items.show', ['item' => $item->id]) }}">
                     <div class="index__items--picture common__badge--position">
                         <img src="{{ asset('storage/images/items/' . $item->item_image) }}" style="width: 100%; display: block;">
+                        
+                        {{-- ユーザーの関与度（当事者か第三者か）とステータスに応じてバッジを分岐 --}}
+                        {{-- UNSOLD：取引中(2) かつ 自身が出品者または購入者の場合 --}}
                         @if ($item->sales_status == 2 && ($item->seller_id == Auth::id() || $item->buyer_id == Auth::id()))
-                            <div class="unsold-badge"><span>UNSD</span></div>
+                            <div class="unsold-badge"><span>未入金</span></div>
+                        {{-- SOLD：売却済(3) または 取引中(2)だが自身が第三者の場合 --}}
                         @elseif ($item->sales_status == 3 || ($item->sales_status == 2 && $item->seller_id != Auth::id() && $item->buyer_id != Auth::id()))
                             <div class="sold-badge"><span>SOLD</span></div>
                         @endif
@@ -66,7 +70,7 @@
     </div>
 </div>
 
-{{-- プロフィール修正・購入完了時・出品完了時に表示されるモーダル --}}
+{{-- セッションメッセージがある場合のみ、CSS制御用の隠しチェックボックスを用いたモーダルを表示 --}}
 @if(session('modal_message'))
 <div class="modal-wrapper">
     <input type="checkbox" id="modal-trigger" checked style="display: none;">
@@ -78,5 +82,5 @@
     </div>
 </div>
 @endif
-<
+
 @endsection

@@ -9,7 +9,7 @@
     <div class="common__badge--position">
         <img src="/storage/images/items/{{ $item->item_image }}" class="item__picture--photo">
         @if ($item->sales_status == 2 && ($item->seller_id == Auth::id() || $item->buyer_id == Auth::id()))
-            <div class="unsold-badge"><span>UNSD</span></div>
+            <div class="unsold-badge"><span>未入金</span></div>
         @elseif ($item->sales_status == 3 || ($item->sales_status == 2 && $item->seller_id != Auth::id() && $item->buyer_id != Auth::id()))
             <div class="sold-badge"><span>SOLD</span></div>
         @endif
@@ -24,9 +24,7 @@
         </div>
         <div class="item__content--mark">
             <div class="item__content--mark-unit">
-                {{-- 💡 ログインしている場合 --}}
                 @if($item->favoritedByUsers->contains(Auth::id()))
-                    {{-- すでにいいねしている場合：クリックで「解除（DELETE）」 --}}
                     <form action="{{ route('favorites.destroy', $item) }}" method="POST" style="display: inline;">
                         @csrf
                         @method('DELETE')
@@ -35,7 +33,6 @@
                         </button>
                     </form>
                 @else
-                    {{-- まだいいねしていない場合：クリックで「登録（POST）」 --}}
                     <form action="{{ route('favorites.store', $item) }}" method="POST" style="display: inline;">
                         @csrf
                         <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
@@ -43,7 +40,7 @@
                         </button>
                     </form>
                 @endif
-                {{-- いいねの総数を表示（loadCountを使うことで _count で取得できます） --}}
+                {{-- N+1問題対策（loadCount）を考慮し、_countプロパティを優先して取得 --}}
                 <div class="item__content--mark-count">
                     {{ $item->favoritedByUsers_count ?? $item->favoritedByUsers->count() }}
                 </div>
@@ -58,7 +55,7 @@
             </div>
         </div>
         @if($item->sales_status == 1)
-            @if($item->seller_id != Auth::id()) )
+            @if($item->seller_id != Auth::id()) 
                 <a href="{{ route('purchase.show', ['item_id' => $item->id]) }}" class="common__button">
                     購入手続きへ
                 </a>
@@ -100,19 +97,17 @@
             <div class="item__info--title">商品の状態</div>
             <div class="item__info--content">{{ $item->condition_text }}</div>
         </div>
-        {{-- 💡 1. タイトルとコメント数の表示 --}}
-        <h2  id="anchor__comment">コメント ({{ $item->reviews_count }})</h2>
 
-        {{-- 💡 2. コメント一覧の表示（すべてループして出力） --}}
+        <h2 id="anchor__comment">コメント ({{ $item->reviews_count }})</h2>
+
         <div class="item__comment-list">
             @foreach($item->reviews as $review)
             <div class="item__comment--wrap">
                 <div class="item__content--picture">
-                    {{-- データベースに値があり、かつ public/storage 内にファイルが実在するかチェック --}}
+                    {{-- プロフィール画像の実在チェック（未設定時はデフォルト画像を表示） --}}
                     @if(!blank($review->user->member_image) && file_exists(public_path('storage/images/profile/' . $review->user->member_image)))
                         <img src="/storage/images/profile/{{ $review->user->member_image }}" class="item__content--picture-photo">
                     @else
-                        {{-- データがない、またはファイルがフォルダにない場合は初期画像を表示 --}}
                         <img src="/storage/images/profile/silver.png" class="item__content--picture-photo">
                     @endif
                     <div class="item__content--picture-name">{{ $review->user->member_name }}</div>
@@ -122,16 +117,12 @@
             @endforeach
         </div>
 
-        {{-- 💡 3. コメント入力エリア（ログインユーザーのみに表示） --}}
-        {{-- 💡 【修正】コメント入力エリア（ログインかつ未売却時のみ表示） --}}
+        {{-- ログインかつ未売却時のみコメント入力を許可 --}}
         @auth
             <div>商品へのコメント</div>
             <form action="{{ route('comments.store', $item) }}" class="item__content--comment-form" method="POST" novalidate>
                 @csrf
-                <textarea name="comment" class="common__input-textbox" required placeholder="コメントを入力してください"></textarea>
-                @error('comment')
-                    <div style="color: red;">{{ $message }}</div>
-                @enderror
+                <textarea name="comment" class="common__input-textbox" required placeholder="コメントを入力してください">{{old('comment')}}</textarea>
                 <button type="submit" class="common__button">コメントを送信する</button>
             </form>
         @else
@@ -144,7 +135,7 @@
     </div>
 </div>
 
-{{-- コメント投稿時・商品購入画面で購入済み商品を表示しようとした時に表示するモーダル --}}
+{{-- セッションメッセージがある場合のみエラー・通知用モーダルを表示 --}}
 @if(session('modal_message'))
 <div class="modal-wrapper">
     <input type="checkbox" id="modal-trigger" checked style="display: none;">
