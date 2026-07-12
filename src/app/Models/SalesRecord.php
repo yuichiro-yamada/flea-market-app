@@ -21,6 +21,7 @@ class SalesRecord extends Model
         'shipping_postcode',
         'shipping_address',
         'shipping_building',
+        'purchase_status'
     ];
 
     // 出品者とusersテーブル（多対１）

@@ -53,14 +53,14 @@ class WebhookController extends Controller
 
             // お金を払っていない（unpaid＝コンビニ決済）場合
             if ($session->payment_status === 'unpaid') {
-
-                $purchaseService->reservePurchase($item_id, $user);
+                // app/Services/PurchaseService.phpのreservePurchaseを呼び出してDB保存
+                $purchaseService->reservePurchase($item_id, $user, $paymentMethodId);
 
                 return response()->json(['status' => 'waiting']);
 
             } else {      // クレジットカード決済の場合（paid）
 
-                // app/Services/PurchaseService.phpのompletePurchaseを呼び出してDB保存
+                // app/Services/PurchaseService.phpのcompletePurchaseを呼び出してDB保存
                 $purchaseService->completePurchase($item_id, $user, $paymentMethodId);
 
                 return response()->json(
@@ -72,8 +72,8 @@ class WebhookController extends Controller
         if ($event->type === 'checkout.session.async_payment_succeeded') {
             \Log::info('async_payment_succeeded');
 
-            // app/Services/PurchaseService.phpのompletePurchaseを呼び出してDB保存
-            $purchaseService->completePurchase($item_id, $user, $paymentMethodId);
+            // app/Services/PurchaseService.phpのpaymentCompletedを呼び出してDB保存
+            $purchaseService->paymentCompleted($item_id);
 
             return response()->json(['status' => 'success'], 200);
         }

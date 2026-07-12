@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('shipping_postcode',7);
             $table->string('shipping_address',255);
             $table->string('shipping_building',255)->nullable();
+            $table->unsignedTinyInteger('purchase_status');
             $table->timestamps();
         });
     }
