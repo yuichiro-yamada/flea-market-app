@@ -44,41 +44,85 @@ class PurchaseTest extends TestCase
     }
 
     /**
-     * テストNo.1: 「購入する」ボタンを押下すると購入が完了する
+     * テストNo.1-1: クレジットカート決済で「購入する」ボタンを押下すると支払い済みで購入が完了する
      */
-    public function  test_1_「購入する」ボタンを押下すると購入が完了する(): void
+    public function  test_1_1_クレジットカード決済で「購入する」ボタンを押下すると支払い済みで購入が完了する(): void
     {
-        // 1. ユーザーにログインして、2. 商品購入画面を開く
+        // ユーザーにログインして、商品購入画面を開く
         $response = $this->actingAs($this->buyer)->get("/purchase/{$this->item->id}");
         $response->assertStatus(200);
 
-        // 3. 商品を選択して「購入する」ボタンを押下 (post から patch に変更)
+        // 商品を選択して支払い方法をクレジットカード決済にして「購入する」ボタンを押下
         $response = $this->post("/checkout", [
             'item_id'        => $this->item->id,
-            'payment_method' => $this->buyer->default_payment_method,
+            'payment_method' => 0,  // クレジットカード決済
         ]);
 
-        // 購入完了後のリダイレクト先（例: 購入一覧画面）を検証
+        // 購入完了後のリダイレクト先を検証
         $response->assertRedirect('/mypage?page=buy');
 
-        // sales_records テーブルに仕様通りのカラム・値で保存されているか検証
-        // 送付先（shipping_*）がないため、通常の住所（postcode等）が適用される仕様を想定
+        // sales_recordsテーブルのpurchase_status（購買状態）が３（支払い済み）になっているか検証
         $this->assertDatabaseHas('sales_records', [
             'seller_id' => $this->seller->id,
             'buyer_id' => $this->buyer->id,
             'item_id' => $this->item->id,
-            'payment_method' => $this->buyer->default_payment_method,
+            'payment_method' => 0,  // クレジットカード決済
             'purchase_price' => $this->item->item_price,
             'shipping_postcode' => $this->buyer->postcode,
             'shipping_address' => $this->buyer->address,
             'shipping_building' => $this->buyer->building,
+            'purchase_status' => 3, // 支払い済み
+        ]);
+
+        // itemsのテーブルsales_status(販売状態)が３（SOLD　OUT）になっているか検証
+        $this->assertDatabaseHas('items', [
+            'id' => $this->item->id,
+            'sales_status' => 3, // SOLD OUT
         ]);
     }
 
     /**
-     * テストNo.2: 購入した商品は商品一覧画面にて「sold」と表示される
+     * テストNo.1−２: コンビニ決済で「購入する」ボタンを押下すると支払い待ちで購入が完了する
      */
-    public function test_2_購入した商品は商品一覧画面にて「sold」と表示される(): void
+    public function  test_1_2_コンビニ決済で「購入する」ボタンを押下すると支払い待ちで購入が完了する(): void
+    {
+        // ユーザーにログインして、商品購入画面を開く
+        $response = $this->actingAs($this->buyer)->get("/purchase/{$this->item->id}");
+        $response->assertStatus(200);
+
+        // 商品を選択して支払い方法をコンビニ決済にして「購入する」ボタンを押下
+        $response = $this->post("/checkout", [
+            'item_id'        => $this->item->id,
+            'payment_method' => 1,  // コンビニ決済
+        ]);
+
+        // 購入完了後のリダイレクト先を検証
+        $response->assertRedirect('/mypage?page=buy');
+
+        // sales_recordsテーブルのpurchase_status（購買状態）が2（支払い待ち）になっているか検証
+        $this->assertDatabaseHas('sales_records', [
+            'seller_id' => $this->seller->id,
+            'buyer_id' => $this->buyer->id,
+            'item_id' => $this->item->id,
+            'payment_method' => 1,  // コンビニ決済
+            'purchase_price' => $this->item->item_price,
+            'shipping_postcode' => $this->buyer->postcode,
+            'shipping_address' => $this->buyer->address,
+            'shipping_building' => $this->buyer->building,
+            'purchase_status' => 2, // 支払い待ち
+        ]);
+
+        // itemsのテーブルsales_status(販売状態)が2（取引中）になっているか検証
+        $this->assertDatabaseHas('items', [
+            'id' => $this->item->id,
+            'sales_status' => 2, // 取引中
+        ]);
+    }
+
+    /**
+     * テストNo.2: 購入した商品は商品一覧画面にて「SOLD」と表示される
+     */
+    public function test_2_購入した商品は商品一覧画面にて「SOLD」と表示される(): void
     {
         // 商品の販売状態を「3: SOLD OUT」に変更
         $this->item->update(['sales_status' => 3]);

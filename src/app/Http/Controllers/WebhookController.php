@@ -63,8 +63,7 @@ class WebhookController extends Controller
                 // app/Services/PurchaseService.phpのcompletePurchaseを呼び出してDB保存
                 $purchaseService->completePurchase($item_id, $user, $paymentMethodId);
 
-                return response()->json(
-                    ['status' => 'success'],200);
+                return response()->json(['status' => 'success'],200);
             }
         }
 

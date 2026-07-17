@@ -125,6 +125,9 @@ docker compose exec php ./vendor/bin/phpunit tests/Feature/（テストファイ
 | **ProfileTest.php** | ユーザー情報取得、ユーザー情報変更 |
 | **SellTest.php** | 出品商品情報登録 |
 
+テスト内容の詳細は下記URLを参照ください。
+https://docs.google.com/spreadsheets/d/1sNCcqk0wZqkKJY46_Gw0vSJYtfcP2qciDxxgAk3NmpA/edit?gid=974925985#gid=974925985
+
 ## 開発環境
 
 - お問い合わせ画面：http://localhost/

@@ -77,7 +77,7 @@ class ReviewTest extends TestCase
         ]);
 
         // セッションに comment のバリデーションエラーがあるか検証
-        $response->assertSessionHasErrors(['comment']);
+        $response->assertSessionHas('modal_message', 'コメントを入力してください');
 
         // リダイレクト先（詳細ページ）で日本語のメッセージが表示されているか検証
         $response = $this->get("/item/{$item->id}");
@@ -101,7 +101,7 @@ class ReviewTest extends TestCase
         ]);
 
         // セッションに comment のバリデーションエラーがあるか検証
-        $response->assertSessionHasErrors(['comment']);
+        $response->assertSessionHas('modal_message', 'コメントは255文字以内で入力してください');
 
         // リダイレクト先（詳細ページ）で日本語のメッセージが表示されているか検証
         $response = $this->get("/item/{$item->id}");

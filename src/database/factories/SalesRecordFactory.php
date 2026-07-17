@@ -25,6 +25,7 @@ class SalesRecordFactory extends Factory
             'shipping_postcode' => '1234567',
             'shipping_address' => '東京都港区芝公園4-2-8',
             'shipping_building' => '東京タワービル',
+            'purchase_status' => 3,
         ];
     }
 }

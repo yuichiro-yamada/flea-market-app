@@ -17,37 +17,43 @@ class PaymentController extends Controller
         // 1. Stripeのシークレットキーを設定
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
-        // 1. 支払い方法の初期値を設定
+        // ２. 支払い方法の設定
         $paymentTypes = ['card'];
 
         if ((int)$request->payment_method === 1) {
             $paymentTypes = ['konbini'];
         }
 
-         // 3. セッションの作成
+         // 3. 商品情報・ユーザー情報取得
         $item = Item::findOrFail($request->item_id);
         $user = Auth::user();
 
-        // 販売中絵なければStripe決済画面へ遷移せず、戻ってエラーモーダル表示
+        // ４。　売り切れチェック（販売中でなければStripe決済画面へ遷移せず、戻ってエラーモーダル表示）
         if ($item->sales_status !== 1) {
             return back()->with('error', 'この商品は既に購入されています');
         }
 
-        // PHPunitによるテストならStripeを利用しない
+        // PHPunitによるテストならStripeを利用せず、直接DB書き込み
         if (app()->environment('testing')) {
-
-            $this->purchaseService->completePurchase(
-                $item,
-                $user,
-                (int)$request->payment_method
-            );
-
+            if((int)$request->payment_method ===1){
+                $this->purchaseService->reservePurchase(
+                    $item->id,
+                    $user,
+                    (int)$request->payment_method
+                );
+            } else {
+                $this->purchaseService->completePurchase(
+                    $item->id,
+                    $user,
+                    (int)$request->payment_method
+                );
+            }
             return redirect('/mypage?page=buy');
         }
 
         // PHPunitによるテストではないならStripeを利用
         $session = Session::create([
-            'payment_method_types' => $paymentTypes, // ここに変数を入れる
+            'payment_method_types' => $paymentTypes,
             'line_items' => [[
                 'price_data' => [
                     'currency' => 'jpy',
@@ -93,7 +99,7 @@ class PaymentController extends Controller
             }
 
             // Webhookでsales_recordsが作成されるまで最大1.5秒(0.3秒　X　５回)待機する
-            usleep(３00000);
+            usleep(300000);
         }
 
         // ケース1：レコードがなかった場合
