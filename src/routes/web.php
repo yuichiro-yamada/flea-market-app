@@ -28,17 +28,22 @@ Route::get('/', [ItemController::class, 'index'])->name('index');
 // 商品詳細画面を表示する
 Route::get('/item/{item}', [ItemController::class, 'show'])->name('items.show');
 
+// Breeze（auth.php）にログイン・新規登録・ログアウトの各画面の表示や各処理をするためのルートを記述
+require __DIR__.'/auth.php';
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // マイページを表示する
     Route::get('/mypage',[UserController::class,'mypage'])->name('mypage');
 
     // プロフィール画面を表示する
     Route::get('/mypage/profile', [UserController::class, 'profile'])->name('profile');
+
     // プロフィール画面の修正内容をアップデートする
     Route::post('/profile/update', [UserController::class, 'updateAll'])->name('profile.update.all');
 
     // 商品詳細画面で「いいね」登録する
     Route::post('/item/{item}/favorite', [FavoriteController::class, 'store'])->name('favorites.store');
+
     // 商品詳細画面で「いいね」解除する
     Route::delete('/item/{item}/favorite', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
 
@@ -62,20 +67,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // 商品購入画面から住所変更画面へ遷移する
     Route::get('/purchase/address/{item_id}', [PurchaseController::class, 'editAddress'])->name('address.edit');
+
     // 住所変更画面から商品購入が面倒に戻る
     Route::post('/purchase/address/{item_id}', [PurchaseController::class, 'updateAddress'])->name('address.update');
 
     // 商品購入画面で「購入する」ボタンを押す、Stripeによる決済開始（POST）
     Route::post('/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
-    // 決済成功・キャンセル（GET）
+
+    // 決済成功（GET）
     Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+
+    // 決済中止（GET）・・・使われない想定だがStripe決済画面で中止ボタンが用意された場合を見越して用意
     Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
 });
-
-// Breeze（auth.php）の中に
-// ログイン画面（/login)と新規登録画面(/register）をログアウト（/logout）を
-// 表示・処理するためのURLとルートが用意さされている
-require __DIR__.'/auth.php';
 
 // Stripeからの非同期通知を受け取るAPIエンドポイント
 Route::post('/api/stripe/webhook', [WebhookController::class, 'handleStripeWebhook']);

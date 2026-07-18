@@ -12,6 +12,13 @@ use App\Services\PurchaseService;
 
 class PaymentController extends Controller
 {
+    // PurchaseService（DB処理をまとめたクラス）をコントローラで使えるように受け取るためのコンストラクタ
+    // /app/Services/PurchaseService.php
+    public function __construct(
+        private PurchaseService $purchaseService
+    ) {
+    }
+
     public function checkout(Request $request)
     {
         // 1. Stripeのシークレットキーを設定
@@ -119,16 +126,11 @@ class PaymentController extends Controller
             ->with('modal_message', "申し訳ございません\n{$item->item_name}\nは他の方に購入されてしまいました");
     }
 
-
+    // 決済中止時の処理（今回のケースではほぼ発生しないが念のため）
     public function cancel()
     {
-        // 決済キャンセル時の処理
-        return view('payment.cancel');
-    }
-
-    public function __construct(
-        private PurchaseService $purchaseService
-    ) {
+        return redirect()->route('mypage', ['page' => 'buy'])
+            ->with('modal_message', "{$item->item_name}\nの購入を中止しました");
     }
 }
 

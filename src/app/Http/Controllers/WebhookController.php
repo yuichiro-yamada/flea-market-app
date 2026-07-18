@@ -12,6 +12,13 @@ use App\Services\PurchaseService;
 
 class WebhookController extends Controller
 {
+    // PurchaseService（DB処理をまとめたクラス）をコントローラで使えるように受け取るためのコンストラクタ
+    // /app/Services/PurchaseService.php
+    public function __construct(
+        private PurchaseService $purchaseService
+    ) {
+    }
+
     public function handleStripeWebhook(Request $request)
     {
         // StripeのAPIキーを設定
@@ -46,22 +53,28 @@ class WebhookController extends Controller
         // 購入者IDを元にDBから購入者情報を取得
         $user = User::findOrFail($buyer_id);
 
-        $purchaseService = new PurchaseService();
-
         // Stripeの画面で「購入ボタン」を押した際に実行された時
         if ($event->type === 'checkout.session.completed') {
 
             // お金を払っていない（unpaid＝コンビニ決済）場合
             if ($session->payment_status === 'unpaid') {
                 // app/Services/PurchaseService.phpのreservePurchaseを呼び出してDB保存
-                $purchaseService->reservePurchase($item_id, $user, $paymentMethodId);
+                $this->purchaseService->reservePurchase(
+                    $item_id,
+                    $user,
+                    $paymentMethodId
+                );
 
                 return response()->json(['status' => 'waiting']);
 
             } else {      // クレジットカード決済の場合（paid）
 
                 // app/Services/PurchaseService.phpのcompletePurchaseを呼び出してDB保存
-                $purchaseService->completePurchase($item_id, $user, $paymentMethodId);
+                $this->purchaseService->completePurchase(
+                    $item_id,
+                    $user,
+                    $paymentMethodId
+                );
 
                 return response()->json(['status' => 'success'],200);
             }
@@ -72,7 +85,7 @@ class WebhookController extends Controller
             \Log::info('async_payment_succeeded');
 
             // app/Services/PurchaseService.phpのpaymentCompletedを呼び出してDB保存
-            $purchaseService->paymentCompleted($item_id);
+            $this->purchaseService->paymentCompleted($item_id);
 
             return response()->json(['status' => 'success'], 200);
         }

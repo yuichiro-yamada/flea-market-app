@@ -5,7 +5,7 @@
 ### ◽️ Dockerビルド
 
 - https://github.com/yuichiro-yamada/flea-market-app.git
-- docker-compose up -d --build
+- docker compose up -d --build
 
 ### ◽️ Laravel環境構築
 
@@ -13,8 +13,7 @@
 - composer install
 - cp .env.example .env , 環境変数を適宜変更
 - php artisan key:generate
-- php artisan migrate
-- php artisan db:seed
+- php artisan migrate:fresh --seed
 
 ### ◽️ メール認証の設定 (Mailtrap)
 
@@ -134,13 +133,11 @@ https://docs.google.com/spreadsheets/d/1sNCcqk0wZqkKJY46_Gw0vSJYtfcP2qciDxxgAk3N
 - ユーザー登録: http://localhost/register
 - phpMyAdmin：http://localhost:8080/
 
-## 開発の利用
-
-
 ## 使用技術(実行環境)
 
 - PHP 8.1.34
 - Laravel 10.50.2
+- JavaScript (Vanilla JS)
 - MySQL 8.0.26
 - nginx 1.21.1
 
