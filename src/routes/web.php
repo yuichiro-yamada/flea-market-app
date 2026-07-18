@@ -82,4 +82,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Stripeからの非同期通知を受け取るAPIエンドポイント
-Route::post('/api/stripe/webhook', [WebhookController::class, 'handleStripeWebhook']);
+Route::post('/stripe/webhook', [WebhookController::class, 'handleStripeWebhook']);

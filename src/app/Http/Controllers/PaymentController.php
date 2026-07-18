@@ -112,7 +112,7 @@ class PaymentController extends Controller
         // ケース1：レコードがなかった場合
         if (!$salesRecord) {
         return redirect()->route('mypage', ['page' => 'buy'])
-            ->with('modal_message', "申し訳ございません\n何らかの原因で\n{$item->item_name}\nの」購入に失敗しました");
+            ->with('modal_message', "申し訳ございません\n何らかの原因で\n{$item->item_name}\nの購入に失敗しました");
         }
 
         // ケース２：レコードはあって購入者が自分だった場合
