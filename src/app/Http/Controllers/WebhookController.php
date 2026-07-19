@@ -76,20 +76,20 @@ class WebhookController extends Controller
                     $paymentMethodId
                 );
 
-                return response()->json(['status' => 'success'],200);
+                // 対象外のWebhookイベントは何もせず正常終了
+                return response()->json(['status' => 'success'], 200);
             }
         }
 
         // 後からお金が支払われた時（コンビニ決済実行3分後）
         if ($event->type === 'checkout.session.async_payment_succeeded') {
-            \Log::info('async_payment_succeeded');
 
             // app/Services/PurchaseService.phpのpaymentCompletedを呼び出してDB保存
             $this->purchaseService->paymentCompleted($item_id);
-
+            // 対象外のWebhookイベントは何もせず正常終了
             return response()->json(['status' => 'success'], 200);
         }
-
-        return response()->json(['status' => 'success']);
+        // 対象外のWebhookイベントは何もせず正常終了
+        return response()->json(['status' => 'success'], 200);
     }
 }
