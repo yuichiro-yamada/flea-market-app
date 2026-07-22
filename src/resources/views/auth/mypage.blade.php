@@ -9,7 +9,11 @@
 @auth
     <div class="mypage__form">
         <div class="mypage__picture">
-            <img src="{{ asset('storage/images/profile/' . $user->member_image) }}" class="common__picture--photo">
+            <img src="{{ 
+                $user->member_image && file_exists(public_path('storage/images/profile/' . $user->member_image))
+                    ? '/storage/images/profile/' . $user->member_image 
+                    : '/storage/images/profile/silver.png'
+            }}" class="common__picture--photo">
 
             <div class="mypage__name">{{ $user->member_name }}</div>
             <a href="mypage/profile" class="mypage__picture--select">プロフィールを編集</a>

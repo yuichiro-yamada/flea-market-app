@@ -12,7 +12,7 @@ class FavoriteController extends Controller
     public function store(Item $item)
     {
         // ログイン中のユーザーIDとこの商品IDを中間テーブルに紐づける
-        Auth::user()->favoriteItems()->syncWithoutDetaching([$item->id]);
+        Auth::user()->favoriteItems()->attach([$item->id]);
 
         // 直前の画面（商品詳細画面）にリダイレクトして再表示
         return back();
